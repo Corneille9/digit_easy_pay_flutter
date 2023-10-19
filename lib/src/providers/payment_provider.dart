@@ -37,6 +37,9 @@ class PaymentProvider{
   }
 
   Future<List<Country>> getAllCountries() async {
+    print('sdjjkhsdkfhkjsdfhdfkhdskfhdskhfkdshfhsdkfhksdfhjdsfd');
+    print(client.dio.options.headers);
+    print('sdjjkhsdkfhkjsdfhdfkhdskfhdskhfkdshfhsdkfhksdfhjdsfd');
     var response = await client.get(path: "/resources/countries/all");
     return ((response.data??[]) as List).map((e) => Country.fromMap(e)).toList();
   }

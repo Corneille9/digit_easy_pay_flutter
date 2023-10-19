@@ -54,11 +54,16 @@ class DigitEasyPay {
     return await _provider.makeMobilePayment(method, charge);
   }
 
-  void checkout(BuildContext context, {required num amount}){
-    // _validateInitialized();
-    _digitEasyPayCheckout ??= DigitEasyPayCheckout(context: context, amount: amount);
+  Future<void> checkout(BuildContext context, {required num amount}) async {
+    await initialize().then((value) => _checkout(context, amount: amount));
+  }
+
+  Future<void> _checkout(BuildContext context, {required num amount}) async {
+    _digitEasyPayCheckout ??= DigitEasyPayCheckout(context: context, amount: amount, provider: _provider);
     _digitEasyPayCheckout?.init();
   }
+
+
 
   void dispose() {
     _paymentMethods = [];

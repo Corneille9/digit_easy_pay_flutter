@@ -12,47 +12,51 @@ class PaymentHttpClient {
 
   PaymentHttpClient({required DigitEasyPayConfig config}): _config = config;
 
-  late Dio _dio;
+  Dio? _dio;
+
+  Dio get dio => _dio!;
 
   Future<void> ensureInitialized() async {
+    if(_dio!=null)return;
+
     _dio = Dio(BaseOptions(baseUrl: _config.environment.isLive?"https://api.digiteasypay.com/digit-pay/api":"https://digitpay.myroobot.com/digit-pay/api", responseType: ResponseType.json, contentType: "application/json; charset=utf-8"));
-    _dio.options.headers.addAll({
+    _dio?.options.headers.addAll({
         HttpHeaders.authorizationHeader: 'Basic ${_getEncodedAuthorization()}',
         'userKey': _config.userKey
       },);
   }
 
   void dispose() async {
-    _dio.options.headers.clear();
+    _dio?.options.headers.clear();
   }
 
   Future<Response> post({required String path, dynamic data = const {}, Map<String, dynamic> queryParameters = const {}, bool useFormData = false})async{
     await ensureInitialized();
-    var response = await _dio.post(path, data: useFormData?FormData.fromMap(data):data, queryParameters: queryParameters);
+    var response = await dio.post(path, data: useFormData?FormData.fromMap(data):data, queryParameters: queryParameters);
     return response;
   }
 
   Future<Response> get({required String path, Map<String, dynamic> queryParameters = const {}})async{
     await ensureInitialized();
-    var response = await _dio.get(path, queryParameters: queryParameters,);
+    var response = await dio.get(path, queryParameters: queryParameters,);
     return response;
   }
 
   Future<Response> patch({required String path, dynamic data = const {}, Map<String, dynamic> queryParameters = const {}})async{
     await ensureInitialized();
-    var response = await _dio.patch(path, data: data, queryParameters: queryParameters,);
+    var response = await dio.patch(path, data: data, queryParameters: queryParameters,);
     return response;
   }
 
   Future<Response> put({required String path, dynamic data = const {}, Map<String, dynamic> queryParameters = const {}})async{
     await ensureInitialized();
-    var response = await _dio.put(path, data: data, queryParameters: queryParameters,);
+    var response = await dio.put(path, data: data, queryParameters: queryParameters,);
     return response;
   }
 
   Future<Response> delete({required String path, Map<String, dynamic> data = const {}, Map<String, dynamic> queryParameters = const {}})async{
     await ensureInitialized();
-    var response = await _dio.delete(path, data: data, queryParameters: queryParameters);
+    var response = await dio.delete(path, data: data, queryParameters: queryParameters);
     return response;
   }
 

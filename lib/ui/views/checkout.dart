@@ -1,16 +1,20 @@
 import 'package:digit_easy_pay_flutter/src/common/payment_constants.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_images.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_theme.dart';
+import 'package:digit_easy_pay_flutter/src/providers/country_provider.dart';
+import 'package:digit_easy_pay_flutter/src/providers/payment_provider.dart';
 import 'package:digit_easy_pay_flutter/ui/widgets/flexible_bottom_sheet_header_delegate.dart';
 import 'package:digit_easy_pay_flutter/ui/widgets/flexible_bottom_sheet_route.dart';
 import 'package:digit_easy_pay_flutter/ui/widgets/mobile_payment_builder.dart';
 import 'package:digit_easy_pay_flutter/ui/widgets/payment_methods_builder.dart';
 import 'package:digit_easy_pay_flutter/ui/widgets/visa_payment_builder.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
 class DigitEasyPayCheckout{
   final BuildContext context;
   final num amount;
+  final PaymentProvider provider;
   final PaymentTheme theme;
   final PageController controller = PageController();
   final VoidCallback? onCancel;
@@ -18,7 +22,7 @@ class DigitEasyPayCheckout{
   ScrollController? scrollController;
   final ValueNotifier<DigitEasyPayPaymentMethod> selectedMethod = ValueNotifier(DigitEasyPayPaymentMethod.momo);
 
-  DigitEasyPayCheckout({required this.context, required this.amount, this.onCancel, this.onSuccess, PaymentTheme? theme}):theme = theme??DefaultPaymentTheme();
+  DigitEasyPayCheckout({required this.context, required this.amount,required this.provider, this.onCancel, this.onSuccess, PaymentTheme? theme}):theme = theme??DefaultPaymentTheme();
 
   void onMethodChange(DigitEasyPayPaymentMethod method){
     // controller.animateToPage(DigitEasyPayPaymentMethod.values.indexOf(method), duration: const Duration(milliseconds: 500), curve: Curves.ease);
@@ -43,48 +47,18 @@ class DigitEasyPayCheckout{
       bodyBuilder: (context, bottomSheetOffset) {
         return SliverChildListDelegate(
           [
-            DigitEasyPayPaymentBuilder(checkout: this)
+            MultiProvider(
+                providers: [
+                  ChangeNotifierProvider(create: (context) => CountryProvider()..getCountries(this),)
+                ],
+                child: DigitEasyPayPaymentBuilder(checkout: this)
+            ),
           ]
         );
       },
       anchors: [0.5, 1],
       // isSafeArea: true,
       // isModal: true
-    );
-
-    return;
-    showFlexibleBottomSheet(
-      minHeight: 0.5,
-      initHeight: 0.7,
-      maxHeight: 1,
-      context: context,
-      builder: _buildBottomSheet,
-      anchors: [0.5, 1],
-      // isSafeArea: true,
-      // isModal: true
-    );
-  }
-
-  Widget _buildBottomSheet(BuildContext context, ScrollController scrollController, double bottomSheetOffset,) {
-    this.scrollController = scrollController;
-    return Material(
-      child: NestedScrollView(
-        controller: scrollController,
-        floatHeaderSlivers: true,
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: FlexibleBottomSheetHeaderDelegate(
-                maxHeight: 200,
-                minHeight: 200,
-                child: getHeaders()
-              ),
-            ),
-          ];
-        },
-        body: DigitEasyPayPaymentBuilder(checkout: this),
-      )
     );
   }
 
@@ -170,78 +144,57 @@ class _DigitEasyPayPaymentBuilderState extends State<DigitEasyPayPaymentBuilder>
 
   PaymentTheme get theme => _checkout.theme;
 
-  late Map<DigitEasyPayPaymentMethod, Widget> children = {
-    DigitEasyPayPaymentMethod.momo: DigitEasyPayMobilePaymentBuilder(
-      checkout: _checkout,
-    ),
-    DigitEasyPayPaymentMethod.flooz: DigitEasyPayMobilePaymentBuilder(
-      checkout: _checkout,
-    ),
-    DigitEasyPayPaymentMethod.visa: DigitEasyPayVisaPaymentBuilder(
-      checkout: _checkout,
-    )
-  };
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    return ValueListenableBuilder(
-      valueListenable: _checkout.selectedMethod,
-      builder: (context, value, child) {
-        return Container(
-          padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(
-            color: theme.backgroundSubtleColor
-          ),
-          child: Column(
-            children: [
-              Visibility(
-                visible: value==DigitEasyPayPaymentMethod.momo,
-                child: DigitEasyPayMobilePaymentBuilder(
-                  checkout: _checkout,
+    return Consumer<CountryProvider>(
+      builder: (context, countryProvider, child) {
+        return ValueListenableBuilder(
+          valueListenable: _checkout.selectedMethod,
+          builder: (context, value, child) {
+
+            if(!countryProvider.hasData){
+              return SizedBox(
+                height: 200,
+                child: Center(
+                  child: CircularProgressIndicator(color: theme.primaryColor),
                 ),
+              );
+            }
+
+            return Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                  color: theme.backgroundSubtleColor
               ),
-              Visibility(
-                visible: value==DigitEasyPayPaymentMethod.flooz,
-                child: DigitEasyPayMobilePaymentBuilder(
-                  checkout: _checkout,
-                ),
+              child: Column(
+                children: [
+                  Visibility(
+                    visible: value==DigitEasyPayPaymentMethod.momo,
+                    child: DigitEasyPayMobilePaymentBuilder(
+                      checkout: _checkout,
+                    ),
+                  ),
+                  Visibility(
+                    visible: value==DigitEasyPayPaymentMethod.flooz,
+                    child: DigitEasyPayMobilePaymentBuilder(
+                      checkout: _checkout,
+                    ),
+                  ),
+                  Visibility(
+                    visible: value==DigitEasyPayPaymentMethod.visa,
+                    child: DigitEasyPayVisaPaymentBuilder(
+                      checkout: _checkout,
+                      countries: countryProvider.countries,
+                    ),
+                  )
+                ],
               ),
-              Visibility(
-                visible: value==DigitEasyPayPaymentMethod.visa,
-                child: DigitEasyPayVisaPaymentBuilder(
-                  checkout: _checkout,
-                ),
-              )
-            ],
-          ),
+            );
+          },
         );
       },
-    );
-
-    return PageView(
-      physics: const NeverScrollableScrollPhysics(),
-      controller: _checkout.controller,
-      children: DigitEasyPayPaymentMethod.values.map((e) {
-        if(e == DigitEasyPayPaymentMethod.momo || e == DigitEasyPayPaymentMethod.flooz){
-          //Mobile method
-          return SingleChildScrollView(
-            controller: _checkout.scrollController,
-            child: DigitEasyPayMobilePaymentBuilder(
-              checkout: _checkout,
-            ),
-          );
-        }
-        //Visa method
-        return SingleChildScrollView(
-          controller: _checkout.scrollController,
-          child: DigitEasyPayVisaPaymentBuilder(
-            checkout: _checkout,
-          ),
-        );
-        //
-      },).toList(),
     );
   }
 

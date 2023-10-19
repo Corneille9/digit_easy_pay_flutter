@@ -6,8 +6,9 @@ import 'package:flutter/material.dart';
 
 
 class DigitEasyPayVisaPaymentBuilder extends StatefulWidget {
-  const DigitEasyPayVisaPaymentBuilder({Key? key, required this.checkout}) : super(key: key);
+  const DigitEasyPayVisaPaymentBuilder({Key? key, required this.checkout, required this.countries}) : super(key: key);
   final DigitEasyPayCheckout checkout;
+  final List<Country> countries;
 
   @override
   State<DigitEasyPayVisaPaymentBuilder> createState() => _DigitEasyPayVisaPaymentBuilderState();
@@ -28,7 +29,7 @@ class _DigitEasyPayVisaPaymentBuilderState extends State<DigitEasyPayVisaPayment
   final TextEditingController _address2Controller = TextEditingController();
   final TextEditingController _buildingNumberController = TextEditingController();
   final TextEditingController _postalCodeController = TextEditingController();
-  List<Country> countries = [];
+  List<Country> get countries => widget.countries;
 
   String _phoneNumber = '';
 
