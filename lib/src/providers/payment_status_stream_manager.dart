@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:digit_easy_pay_flutter/src/common/payment_constants.dart';
-import 'package:digit_easy_pay_flutter/src/providers/payment_provider.dart';
+import 'package:digit_easy_pay_flutter/src/providers/payment_service.dart';
 
 /// stream payment status rather than waiting for delay
 class PaymentStatusStreamManager {
-  PaymentStatusStreamManager(this._timer, this._paymentProvider, {int streamInterval = 10, required this.reference, this.onTimeOut,}) {
+  PaymentStatusStreamManager(this._paymentProvider, {int streamInterval = 5, required this.reference, this.onTimeOut,}) {
     _startStream(streamInterval);
   }
 
@@ -16,7 +16,7 @@ class PaymentStatusStreamManager {
 
   late final Timer _timer;
 
-  final PaymentProvider _paymentProvider;
+  final PaymentService _paymentProvider;
 
   final StreamController<TransactionStatus> _statusTransactionController = StreamController<TransactionStatus>();
 
@@ -24,6 +24,7 @@ class PaymentStatusStreamManager {
 
   void _startStream(int streamInterval) {
     _timer = Timer.periodic(Duration(seconds: streamInterval), (timer) async {
+      print(timer.tick);
         if(_timer.tick==40) {
           dispose();
           onTimeOut?.call();
@@ -39,6 +40,7 @@ class PaymentStatusStreamManager {
 
   /// close timer and stream controller
   void dispose() {
+    print("Cancel paiement stream");
     _timer.cancel();
     _statusTransactionController.close();
   }

@@ -1,7 +1,11 @@
+import 'package:digit_easy_pay_flutter/src/common/inherited_l10n.dart';
+import 'package:digit_easy_pay_flutter/src/common/payment_l10n.dart';
 import 'package:digit_easy_pay_flutter/ui/widgets/change_insets_detector.dart';
 import 'package:digit_easy_pay_flutter/ui/widgets/flexible_bottom_sheet_header_delegate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 
 /// The signature of a method that provides a [BuildContext] and
 /// [ScrollController] for building a widget that may overflow the draggable
@@ -97,6 +101,8 @@ class FlexibleBottomSheet<T> extends StatefulWidget {
   final PopupRoute<T>? route;
   final bool useRootScaffold;
   final BorderRadiusGeometry? bottomSheetBorderRadius;
+  final List<SingleChildWidget> providers;
+  final L10n? l10n;
 
   FlexibleBottomSheet({
     super.key,
@@ -120,6 +126,8 @@ class FlexibleBottomSheet<T> extends StatefulWidget {
     this.bottomSheetBorderRadius,
     this.draggableScrollableController,
     this.useRootScaffold = true,
+    this.providers =  const [],
+    this.l10n,
   })  : assert(minHeight >= 0 && minHeight <= 1),
         assert(maxHeight > 0 && maxHeight <= 1),
         assert(maxHeight > minHeight),
@@ -137,6 +145,7 @@ class FlexibleBottomSheet<T> extends StatefulWidget {
     FlexibleDraggableScrollableWidgetBuilder? builder,
     FlexibleDraggableScrollableHeaderWidgetBuilder? headerBuilder,
     FlexibleDraggableScrollableWidgetBodyBuilder? bodyBuilder,
+    List<SingleChildWidget> providers = const [],
     bool isExpand = true,
     AnimationController? animationController,
     List<double>? anchors,
@@ -168,6 +177,7 @@ class FlexibleBottomSheet<T> extends StatefulWidget {
           bottomSheetColor: bottomSheetColor,
           useRootScaffold: useRootScaffold,
           bottomSheetBorderRadius: bottomSheetBorderRadius,
+          providers: providers
         );
 
   @override
@@ -364,32 +374,36 @@ class _FlexibleBottomSheetState<T> extends State<FlexibleBottomSheet<T>> {
                 );
               }
             },
-            child: Material(
-              type: MaterialType.transparency,
-              color: bottomSheetColor,
-              borderRadius: widget.bottomSheetBorderRadius,
-              clipBehavior: widget.bottomSheetBorderRadius != null
-                  ? Clip.antiAlias
-                  : Clip.none,
-              child: _RegisterScaffold(
-                useRootScaffold: widget.useRootScaffold,
-                backgroundColor: bottomSheetColor,
-                child: _Content(
-                  builder: widget.builder,
-                  decoration: contentDecoration,
-                  bodyBuilder: widget.bodyBuilder,
-                  headerBuilder: widget.headerBuilder,
-                  minHeaderHeight: widget.minHeaderHeight,
-                  maxHeaderHeight: widget.maxHeaderHeight,
-                  currentExtent: _controller.isAttached
-                      ? _controller.size
-                      : widget.initHeight,
-                  scrollController: controller,
-                  cacheExtent: _calculateCacheExtent(
-                    MediaQuery.viewInsetsOf(context).bottom,
+            child: InheritedL10n(
+              l10n: widget.l10n??const L10nFr(),
+              child: Material(
+                type: MaterialType.transparency,
+                color: bottomSheetColor,
+                borderRadius: widget.bottomSheetBorderRadius,
+                clipBehavior: widget.bottomSheetBorderRadius != null
+                    ? Clip.antiAlias
+                    : Clip.none,
+                child: _RegisterScaffold(
+                  useRootScaffold: widget.useRootScaffold,
+                  backgroundColor: bottomSheetColor,
+                  child: _Content(
+                    builder: widget.builder,
+                    decoration: contentDecoration,
+                    bodyBuilder: widget.bodyBuilder,
+                    headerBuilder: widget.headerBuilder,
+                    minHeaderHeight: widget.minHeaderHeight,
+                    maxHeaderHeight: widget.maxHeaderHeight,
+                    providers: widget.providers,
+                    currentExtent: _controller.isAttached
+                        ? _controller.size
+                        : widget.initHeight,
+                    scrollController: controller,
+                    cacheExtent: _calculateCacheExtent(
+                      MediaQuery.viewInsetsOf(context).bottom,
+                    ),
+                    getContentHeight:
+                        !widget.isExpand ? _changeInitAndMaxHeight : null,
                   ),
-                  getContentHeight:
-                      !widget.isExpand ? _changeInitAndMaxHeight : null,
                 ),
               ),
             ),
@@ -438,11 +452,13 @@ class _Content extends StatefulWidget {
   final ScrollController scrollController;
   final Function(double)? getContentHeight;
   final double cacheExtent;
+  final List<SingleChildWidget> providers;
 
   const _Content({
     required this.currentExtent,
     required this.scrollController,
     required this.cacheExtent,
+    this.providers =  const [],
     this.builder,
     this.decoration,
     this.headerBuilder,
@@ -482,10 +498,13 @@ class _ContentState extends State<_Content> {
           decoration: widget.decoration ?? const BoxDecoration(),
           child: SizedBox(
             key: _contentKey,
-            child: widget.builder!(
-              context,
-              widget.scrollController,
-              widget.currentExtent,
+            child: MultiProvider(
+                providers: widget.providers,
+              child: widget.builder!(
+                context,
+                widget.scrollController,
+                widget.currentExtent,
+              ),
             ),
           ),
         ),
@@ -496,28 +515,31 @@ class _ContentState extends State<_Content> {
       type: MaterialType.transparency,
       child: DecoratedBox(
         decoration: widget.decoration ?? const BoxDecoration(),
-        child: CustomScrollView(
-          cacheExtent: widget.cacheExtent,
-          key: _contentKey,
-          controller: widget.scrollController,
-          slivers: <Widget>[
-            if (widget.headerBuilder != null)
-              SliverPersistentHeader(
-                pinned: true,
-                delegate: FlexibleBottomSheetHeaderDelegate(
-                  minHeight: widget.minHeaderHeight ?? 0.0,
-                  maxHeight: widget.maxHeaderHeight ?? 1.0,
-                  child: widget.headerBuilder!(context, widget.currentExtent),
+        child: MultiProvider(
+          providers: widget.providers,
+          child: CustomScrollView(
+            cacheExtent: widget.cacheExtent,
+            key: _contentKey,
+            controller: widget.scrollController,
+            slivers: <Widget>[
+              if (widget.headerBuilder != null)
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: FlexibleBottomSheetHeaderDelegate(
+                    minHeight: widget.minHeaderHeight ?? 0.0,
+                    maxHeight: widget.maxHeaderHeight ?? 1.0,
+                    child: widget.headerBuilder!(context, widget.currentExtent),
+                  ),
                 ),
-              ),
-            if (widget.bodyBuilder != null)
-              SliverList(
-                delegate: widget.bodyBuilder!(
-                  context,
-                  widget.currentExtent,
+              if (widget.bodyBuilder != null)
+                SliverList(
+                  delegate: widget.bodyBuilder!(
+                    context,
+                    widget.currentExtent,
+                  ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );

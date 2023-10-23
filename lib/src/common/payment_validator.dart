@@ -1,5 +1,5 @@
-import 'package:digit_easy_pay_flutter/digit_easy_pay_flutter.dart';
 import 'package:digit_easy_pay_flutter/src/common/exceptions.dart';
+import 'package:digit_easy_pay_flutter/src/common/payment_constants.dart';
 
 abstract class PaymentValidator{
   static bool isEmail(String value){
@@ -8,6 +8,15 @@ abstract class PaymentValidator{
 
   static bool isPhoneNumber(String value){
     return RegExp(r'(^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$)').hasMatch(value);
+  }
+
+  static String reformatPhone(String value){
+    if(value.startsWith("+"))return value.substring(1);
+    return value;
+  }
+
+  static String formatAmount(num amount, DigitEasyPayCurrency currency){
+    return "$amount ${currency.name}";
   }
 
   static bool validateCharge({required DigitEasyPayPaymentMethod method}){

@@ -4,6 +4,7 @@
 
 library select_form_field;
 
+import 'package:digit_easy_pay_flutter/src/common/payment_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -139,6 +140,7 @@ class SelectFormField extends FormField<String> {
     this.dialogCancelBtn,
     this.enableSearch = false,
     this.items,
+    this.theme,
     String? initialValue,
     FocusNode? focusNode,
     InputDecoration? decoration,
@@ -399,6 +401,8 @@ class SelectFormField extends FormField<String> {
   /// ```
   final List<Map<String, dynamic>>? items;
 
+  final PaymentTheme? theme;
+
   @override
   _SelectFormFieldState createState() => _SelectFormFieldState();
 }
@@ -553,6 +557,7 @@ class _SelectFormFieldState extends FormFieldState<String> {
   Future<void> _showSelectFormFieldMenu() async {
     String? lvPicked = await showMenu<dynamic>(
       context: context,
+      color: widget.theme?.backgroundColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       position: _buttonMenuPosition(context),
       initialValue: value,
@@ -594,6 +599,7 @@ class _SelectFormFieldState extends FormFieldState<String> {
       context: context,
       builder: (BuildContext context) {
         return ItemPickerDialog(
+          widget.theme,
           widget.dialogTitle,
           widget.items,
           widget.enableSearch,
@@ -638,6 +644,7 @@ class _SelectFormFieldState extends FormFieldState<String> {
                 overflow: TextOverflow.fade,
                 maxLines: 1,
                 softWrap: false,
+                style: TextStyle(color: widget.theme?.textColor),
               ),
             ),
           ],
@@ -680,8 +687,10 @@ class ItemPickerDialog extends StatefulWidget {
   final String? cancelBtn;
   final List<Map<String, dynamic>>? items;
   final bool enableSearch;
+  final PaymentTheme? theme;
 
   ItemPickerDialog(
+      this.theme,
     this.title,
     this.items, [
     this.enableSearch = true,
@@ -722,7 +731,9 @@ class _ItemPickerDialogState extends State<ItemPickerDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: _titleDialog(),
+      backgroundColor: widget.theme?.dialogBackgroundColor,
       content: Container(
+        color: widget.theme?.dialogBackgroundColor,
         width: double.maxFinite,
         child: _content(),
       ),
@@ -766,8 +777,8 @@ class _ItemPickerDialogState extends State<ItemPickerDialog> {
   }
 
   Widget _showEmpty() {
-    return Stack(
-      children: const <Widget>[
+    return const Stack(
+      children: <Widget>[
         Align(
           alignment: Alignment(0, -0.5),
           child: Icon(

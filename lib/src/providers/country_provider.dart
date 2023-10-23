@@ -8,18 +8,27 @@ class CountryProvider extends ChangeNotifier{
 
   bool _isLoading = false;
 
+  bool _hasError = false;
+
   bool get hasData => countries.isNotEmpty;
+
+  bool get hasError => _hasError;
 
   Future<void> getCountries(DigitEasyPayCheckout checkout) async {
     if(_isLoading)return;
     if(countries.isNotEmpty)return;
+
+    _hasError = false;
     _isLoading = true;
+
+    notifyListeners();
+
     countries = await checkout.provider.getAllCountries().whenComplete(() => _isLoading=false).onError((error, stackTrace) {
-
-      print((error as DioException).response!.requestOptions.uri);
-
+      _hasError = true;
+      notifyListeners();
       throw Exception(error);
     });
+
     notifyListeners();
   }
 }

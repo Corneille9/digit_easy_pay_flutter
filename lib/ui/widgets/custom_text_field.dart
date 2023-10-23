@@ -3,7 +3,7 @@ import 'package:digit_easy_pay_flutter/ui/widgets/select_form_field.dart';
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
-  const CustomTextField({Key? key,required this.theme,  this.controller, this.hintText, this.prefixIcon, this.obscureText=false, this.suffixIcon, this.keyboardType, this.maxLines=1, this.readOnly = false, this.elevate = false, this.onChanged, this.textAlign=TextAlign.start, this.minLines, this.label, this.required = false, this.fillColor, this.onTap, this.border, this.intlPhoneField = false, this.autofocus, this.labelFontSize, this.onCreate, this.selectFormField = false, this.items, this.borderColor, this.fontSize, this.contentPadding, this.initialValue, this.focusNode, this.isPasswordField, this.isDense, this.borderRadius}) : super(key: key);
+  const CustomTextField({Key? key,required this.theme,  this.controller, this.hintText, this.prefixIcon, this.obscureText=false, this.suffixIcon, this.keyboardType, this.maxLines=1, this.readOnly = false, this.elevate = false, this.onChanged, this.textAlign=TextAlign.start, this.minLines, this.label, this.required = false, this.fillColor, this.onTap, this.border, this.intlPhoneField = false, this.autofocus, this.labelFontSize, this.onCreate, this.selectFormField = false, this.items, this.borderColor, this.fontSize, this.contentPadding, this.initialValue, this.focusNode, this.isPasswordField, this.isDense, this.borderRadius, this.validator}) : super(key: key);
   final TextEditingController? controller;
   final String? hintText;
   final Widget? prefixIcon;
@@ -35,6 +35,7 @@ class CustomTextField extends StatelessWidget {
   final FocusNode? focusNode;
   final bool? isDense;
   final BorderRadius? borderRadius;
+  final String? Function(String?)? validator;
 
   final PaymentTheme theme;
 
@@ -68,6 +69,8 @@ class CustomTextField extends StatelessWidget {
         obscureText: obscureText,
         keyboardType: keyboardType,
         autofocus: autofocus??false,
+        theme: theme,
+        // menuBackgroundColor: theme.backgroundColor,
         onChanged: (value) {
           onChanged?.call(value);
         },
@@ -85,12 +88,13 @@ class CustomTextField extends StatelessWidget {
           border: _border,
           enabledBorder: _border,
           focusedBorder: _border,
-          errorBorder: _border,
-          focusedErrorBorder: _border,
+          errorBorder: _border.copyWith(borderSide: _border.borderSide.copyWith(color: theme.errorColor)),
+          focusedErrorBorder: _border.copyWith(borderSide: _border.borderSide.copyWith(color: theme.errorColor)),
           prefixIcon: _prefixIcon,
           hintMaxLines: minLines,
         ),
         items: items,
+        validator: validator,
       );
     }
 
@@ -126,10 +130,12 @@ class CustomTextField extends StatelessWidget {
         border: _border,
         enabledBorder: _border,
         focusedBorder: _border,
-        errorBorder: _border,
+        errorBorder: _border.copyWith(borderSide: _border.borderSide.copyWith(color: theme.errorColor)),
+        focusedErrorBorder: _border.copyWith(borderSide: _border.borderSide.copyWith(color: theme.errorColor)),
         prefixIcon: _prefixIcon,
         hintMaxLines: minLines,
       ),
+      validator: validator,
     );
   }
 

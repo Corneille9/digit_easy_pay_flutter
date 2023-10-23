@@ -7,7 +7,7 @@ const dark = Color(0xff1d1c21);
 const error = Color(0xffff6767);
 
 /// N0
-const neutral0 = Color(0xff1d1c21);
+const neutral0 = Color(0xff1c1c1d);
 
 const neutral0Subtle = Color(0x0d1d1c21);
 
@@ -52,6 +52,7 @@ abstract class PaymentTheme {
     required this.inputTextStyle,
     required this.textColor,
     required this.primaryColor,
+    required this.dialogBackgroundColor,
   });
 
   /// Used as a background color of a chat widget
@@ -90,6 +91,8 @@ abstract class PaymentTheme {
   final InputBorder inputBorder;
 
   final Color textColor;
+
+  final Color dialogBackgroundColor;
 
   /// Primary color of the chat used as a background of sent messages
   /// and statuses
@@ -130,6 +133,7 @@ class DefaultPaymentTheme extends PaymentTheme {
     InputBorder? inputBorder,
     Color textColor = neutral0,
     Color primaryColor = primary,
+    Color dialogBackgroundColor = neutral7,
   }) :super(
     backgroundColor: backgroundColor,
     backgroundSubtleColor: backgroundSubtleColor,
@@ -149,6 +153,7 @@ class DefaultPaymentTheme extends PaymentTheme {
         borderSide: BorderSide(color: neutral0.withOpacity(0.1), width: 1)
     ),
     primaryColor: primaryColor,
+    dialogBackgroundColor: dialogBackgroundColor,
   );
 }
 
@@ -160,7 +165,7 @@ class DarkPaymentTheme extends PaymentTheme {
   /// which extends [PaymentTheme]
 
   DarkPaymentTheme({
-    Color backgroundColor = dark,
+    Color backgroundColor = Colors.black,
     Color backgroundSubtleColor = neutral0Subtle,
     Color errorColor = error,
     Color inputBackgroundColor = dark,
@@ -187,6 +192,7 @@ class DarkPaymentTheme extends PaymentTheme {
     Color textColor = neutral7,
     InputBorder? inputBorder,
     Color primaryColor = primary,
+    Color dialogBackgroundColor = dark,
   }) :super(
           backgroundColor: backgroundColor,
           backgroundSubtleColor: backgroundSubtleColor,
@@ -206,5 +212,6 @@ class DarkPaymentTheme extends PaymentTheme {
               borderSide: BorderSide(color: neutral7.withOpacity(0.1), width: 1)
           ),
           primaryColor: primaryColor,
+          dialogBackgroundColor: dialogBackgroundColor,
         );
 }

@@ -1,6 +1,8 @@
 import 'package:digit_easy_pay_flutter/src/common/payment_constants.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_theme.dart';
+import 'package:digit_easy_pay_flutter/src/providers/payment_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 //ignore: must_be_immutable
 class DigitEasyPayPaymentMethodBuilder extends StatelessWidget {
@@ -9,13 +11,16 @@ class DigitEasyPayPaymentMethodBuilder extends StatelessWidget {
   final Function(DigitEasyPayPaymentMethod method)? onSelect;
   final PaymentTheme theme;
 
-  Widget _methodBuilder({required DigitEasyPayPaymentMethod method}) {
+  Widget _methodBuilder(BuildContext context, {required DigitEasyPayPaymentMethod method}) {
     return Column(
       children: [
         InkWell(
           borderRadius: BorderRadius.circular(5),
           // splashColor: Colors.white,
           onTap: () {
+            
+            if(Provider.of<PaymentProvider>(context, listen: false).isLoading)return;
+            
             if(selectedMethod.value == method) return;
             selectedMethod.value = method;
             onSelect?.call(method);
@@ -54,7 +59,7 @@ class DigitEasyPayPaymentMethodBuilder extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const SizedBox(),
-            ...DigitEasyPayPaymentMethod.values.map((e) => _methodBuilder(method: e)).toList(),
+            ...DigitEasyPayPaymentMethod.values.map((e) => _methodBuilder(context, method: e)).toList(),
             const SizedBox(),
           ],
         );

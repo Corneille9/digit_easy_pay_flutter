@@ -1,4 +1,4 @@
-import 'package:digit_easy_pay_flutter/src/common/chat_l10n.dart';
+import 'package:digit_easy_pay_flutter/src/common/payment_l10n.dart';
 import 'package:flutter/widgets.dart';
 
 class InheritedL10n extends InheritedWidget {

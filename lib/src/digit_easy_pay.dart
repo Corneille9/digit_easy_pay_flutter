@@ -1,12 +1,14 @@
-import 'package:digit_easy_pay_flutter/digit_easy_pay_flutter.dart';
 import 'package:digit_easy_pay_flutter/src/common/digit_easy_pay_config.dart';
 import 'package:digit_easy_pay_flutter/src/common/exceptions.dart';
+import 'package:digit_easy_pay_flutter/src/common/payment_constants.dart';
+import 'package:digit_easy_pay_flutter/src/common/payment_l10n.dart';
+import 'package:digit_easy_pay_flutter/src/common/payment_theme.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_validator.dart';
 import 'package:digit_easy_pay_flutter/src/models/card_pay_request.dart';
 import 'package:digit_easy_pay_flutter/src/models/card_pay_response.dart';
 import 'package:digit_easy_pay_flutter/src/models/mobile_pay_request.dart';
 import 'package:digit_easy_pay_flutter/src/models/mobile_pay_response.dart';
-import 'package:digit_easy_pay_flutter/src/providers/payment_provider.dart';
+import 'package:digit_easy_pay_flutter/src/providers/payment_service.dart';
 import 'package:digit_easy_pay_flutter/ui/views/checkout.dart';
 import 'package:flutter/material.dart';
 
@@ -14,7 +16,7 @@ class DigitEasyPay {
   bool _initialized = false;
   final DigitEasyPayConfig config;
   List<DigitEasyPayPaymentMethod> _paymentMethods = [];
-  late PaymentProvider _provider;
+  late PaymentService _provider;
   DigitEasyPayCheckout? _digitEasyPayCheckout;
 
   DigitEasyPay(this.config);
@@ -36,7 +38,7 @@ class DigitEasyPay {
       return true;
     }());
     _paymentMethods = paymentMethods;
-    _provider = PaymentProvider(config)..initialize();
+    _provider = PaymentService(config)..initialize();
 
     _initialized = true;
   }
@@ -54,16 +56,14 @@ class DigitEasyPay {
     return await _provider.makeMobilePayment(method, charge);
   }
 
-  Future<void> checkout(BuildContext context, {required num amount}) async {
-    await initialize().then((value) => _checkout(context, amount: amount));
+  Future<void> checkout(BuildContext context, {required num amount, DigitEasyPayCurrency currency = DigitEasyPayCurrency.XOF, PaymentTheme? theme, L10n? l10n}) async {
+    await initialize().then((value) => _checkout(context, amount: amount,currency: currency, theme: theme, l10n: l10n));
   }
 
-  Future<void> _checkout(BuildContext context, {required num amount}) async {
-    _digitEasyPayCheckout ??= DigitEasyPayCheckout(context: context, amount: amount, provider: _provider);
+  Future<void> _checkout(BuildContext context, {required num amount, DigitEasyPayCurrency currency = DigitEasyPayCurrency.XOF, PaymentTheme? theme, L10n? l10n}) async {
+    _digitEasyPayCheckout ??= DigitEasyPayCheckout(context: context, amount: amount, provider: _provider, currency: currency, theme: theme, l10n: l10n);
     _digitEasyPayCheckout?.init();
   }
-
-
 
   void dispose() {
     _paymentMethods = [];

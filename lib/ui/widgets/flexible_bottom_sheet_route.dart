@@ -1,6 +1,8 @@
 // ignore_for_file: format-comment
+import 'package:digit_easy_pay_flutter/src/common/payment_l10n.dart';
 import 'package:digit_easy_pay_flutter/ui/widgets/flexible_bottom_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/single_child_widget.dart';
 
 const Duration _bottomSheetDuration = Duration(milliseconds: 500);
 
@@ -117,6 +119,7 @@ Future<T?> showStickyFlexibleBottomSheet<T>({
   required BuildContext context,
   required FlexibleDraggableScrollableHeaderWidgetBuilder headerBuilder,
   required FlexibleDraggableScrollableWidgetBodyBuilder bodyBuilder,
+  List<SingleChildWidget> providers = const [],
   DraggableScrollableController? draggableScrollableController,
   double? minHeight,
   double? initHeight,
@@ -138,6 +141,7 @@ Future<T?> showStickyFlexibleBottomSheet<T>({
   Duration? duration,
   bool isSafeArea = false,
   bool useRootScaffold = true,
+  L10n? l10n,
 }) {
   assert(maxHeaderHeight != null || headerHeight != null);
   assert(debugCheckHasMediaQuery(context));
@@ -169,6 +173,8 @@ Future<T?> showStickyFlexibleBottomSheet<T>({
       duration: duration,
       isSafeArea: isSafeArea,
       useRootScaffold: useRootScaffold,
+      providers: providers,
+      l10n: l10n
     ),
   );
 }
@@ -198,6 +204,8 @@ class _FlexibleBottomSheetRoute<T> extends PopupRoute<T> {
   final Duration? duration;
   final bool isSafeArea;
   final bool useRootScaffold;
+  final List<SingleChildWidget> providers;
+  final L10n? l10n;
 
   @override
   final String? barrierLabel;
@@ -225,6 +233,7 @@ class _FlexibleBottomSheetRoute<T> extends PopupRoute<T> {
     required this.isModal,
     required this.isSafeArea,
     required this.useRootScaffold,
+    this.providers =  const [],
     this.draggableScrollableController,
     this.builder,
     this.headerBuilder,
@@ -240,6 +249,7 @@ class _FlexibleBottomSheetRoute<T> extends PopupRoute<T> {
     this.bottomSheetBorderRadius,
     this.barrierBottomSheetColor,
     this.duration,
+    this.l10n,
     super.settings,
   });
 
@@ -282,6 +292,7 @@ class _FlexibleBottomSheetRoute<T> extends PopupRoute<T> {
               bottomSheetColor: bottomSheetColor,
               useRootScaffold: useRootScaffold,
               bottomSheetBorderRadius: bottomSheetBorderRadius,
+              providers: providers,
             )
           : FlexibleBottomSheet(
               route: this,
@@ -302,6 +313,8 @@ class _FlexibleBottomSheetRoute<T> extends PopupRoute<T> {
               bottomSheetColor: bottomSheetColor,
               useRootScaffold: useRootScaffold,
               bottomSheetBorderRadius: bottomSheetBorderRadius,
+              providers: providers,
+              l10n: l10n,
             ),
     );
 

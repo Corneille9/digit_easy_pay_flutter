@@ -53,11 +53,11 @@ class _MyHomePageState extends State<MyHomePage> {
     var config = const DigitEasyPayConfig(
       environment: DigitEasyPayEnvironment.live,
       userKey: "prdigitp@yQos23",
-      password: "us_prdigitpay@dmin",
-      username: "prdC2O23gvfcfj"
+      password: "prdC2O23gvfcfj",
+      username: "us_prdigitpay@dmin",
     );
     var digit = DigitEasyPay(config);
-    digit.checkout(context, amount: 2000);
+    digit.checkout(context, amount: 1, l10n: const L10nEn(), theme: DefaultPaymentTheme());
   }
 
   @override
