@@ -54,7 +54,7 @@ void main() {
     amount: 1,
     currency: DigitEasyPayCurrency.XOF, // Currency (default is XOF)
     l10n: L10nEn(), // Language settings (you can use L10nFr, L10nCn, or create your own)
-    theme: DefaultPaymentTheme.light(), // Payment theme (you can also use DarkPaymentTheme or create a custom theme)
+    theme: DefaultPaymentTheme(), // Payment theme (you can also use DarkPaymentTheme or create a custom theme)
   );
 
   // When you're done, make sure to release resources
