@@ -108,6 +108,9 @@ class _DigitEasyPayMobilePaymentBuilderState extends State<DigitEasyPayMobilePay
             },
             validator: (value) {
               if(value==null)return l10n.invalidPhone;
+
+              if(!_checkout.provider.config.environment.isLive)return null;
+
               return PaymentValidator.isPhoneNumber(value)?null:l10n.invalidPhone;
             },
           ),

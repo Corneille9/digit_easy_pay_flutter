@@ -1,8 +1,21 @@
 
+import 'package:dio/dio.dart';
+
 class DigitEasyPayException implements Exception {
   String? message;
 
   DigitEasyPayException(this.message);
+
+
+  static interpretError(DioException exception){
+    var response = exception.response;
+
+    if(response?.statusCode==401 || response?.statusCode==403){
+      throw AuthenticationException("Authentication Error: The provided API keys are invalid."
+          "Please double-check that you have correctly configured the API keys in your request. Ensure that both the public key and private key are accurate and correspond to your account. If you have recently generated new keys, make sure to update them in your code."
+          "If the issue persists, feel free to reach out to our support team at [support email address] or [support phone number] for further assistance.");
+    }
+  }
 
   @override
   String toString() {
@@ -24,7 +37,7 @@ class ChargeException extends DigitEasyPayException {
 }
 
 class InvalidAmountException extends DigitEasyPayException {
-  int amount = 0;
+  num amount = 0;
 
   InvalidAmountException(this.amount)
       : super('$amount is not a valid '

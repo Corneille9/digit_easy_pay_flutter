@@ -41,6 +41,12 @@ class CardPayRequest{
     required this.iso2Code,
   });
 
+
+  @override
+  String toString() {
+    return 'CardPayRequest{phoneNumber: $phoneNumber, totalAmount: $totalAmount, firstName: $firstName, lastName: $lastName, middleName: $middleName, currency: $currency, title: $title, city: $city, address2: $address2, town: $town, department: $department, buildingNumber: $buildingNumber, email: $email, postalCode: $postalCode, emailDomain: $emailDomain, country: $country, iso2Code: $iso2Code}';
+  }
+
   CardPayRequest copyWith({
     String? phoneNumber,
     num? totalAmount,

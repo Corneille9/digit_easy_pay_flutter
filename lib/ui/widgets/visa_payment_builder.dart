@@ -131,7 +131,7 @@ class _DigitEasyPayVisaPaymentBuilderState extends State<DigitEasyPayVisaPayment
                 contentPadding:
                 const EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
                 validator: (value) {
-                  // if(value==null || value.trim().isEmpty)return l10n.invalidField;
+                  if(value==null || value.trim().isEmpty)return l10n.invalidField;
                   return null;
                 },
               ),

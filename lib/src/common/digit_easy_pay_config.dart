@@ -1,13 +1,22 @@
+import 'package:digit_easy_pay_flutter/src/common/payment_constants.dart';
 
-import 'package:digit_easy_pay_flutter/digit_easy_pay_flutter.dart';
-
-class DigitEasyPayConfig{
+/// [DigitEasyPayConfig] Class
+///
+/// This class represents the configuration settings required for initializing the [DigitEasyPay] SDK. It includes information about the environment, user key, username, and password needed for the integration.
+class DigitEasyPayConfig {
   final DigitEasyPayEnvironment environment;
   final String userKey;
   final String username;
   final String password;
 
-//<editor-fold desc="Data Methods">
+  /// Constructor for the [DigitEasyPayConfig] class.
+  ///
+  /// Initializes the configuration with the provided environment, user key, username, and password.
+  ///
+  /// @param [environment] The environment for the [DigitEasyPay] integration (e.g., sandbox or live).
+  /// @param [userKey] The user key associated with the integration.
+  /// @param [username] The username for the integration.
+  /// @param [password] The password for the integration.
   const DigitEasyPayConfig({
     required this.environment,
     required this.userKey,
@@ -15,6 +24,7 @@ class DigitEasyPayConfig{
     required this.password,
   });
 
+  /// Equality operator to compare two DigitEasyPayConfig objects for equality.
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -25,6 +35,7 @@ class DigitEasyPayConfig{
               username == other.username &&
               password == other.password);
 
+  /// Computes a hash code for the DigitEasyPayConfig object.
   @override
   int get hashCode =>
       environment.hashCode ^
@@ -32,11 +43,18 @@ class DigitEasyPayConfig{
       username.hashCode ^
       password.hashCode;
 
+  /// Converts the DigitEasyPayConfig object to a string representation.
   @override
   String toString() {
-    return 'DigitEasyPayConfig{ environment: $environment, userKey: $userKey, username: $username, password: $password,}';
+    return 'DigitEasyPayConfig{ environment: $environment, userKey: $userKey, username: $username, password: $password }';
   }
 
+  /// Create a copy of the [DigitEasyPayConfig] object with optional fields replaced.
+  ///
+  /// @param environment The environment to replace the existing environment with (optional).
+  /// @param userKey The user key to replace the existing user key with (optional).
+  /// @param username The username to replace the existing username with (optional).
+  /// @param password The password to replace the existing password with (optional).
   DigitEasyPayConfig copyWith({
     DigitEasyPayEnvironment? environment,
     String? userKey,
@@ -51,6 +69,9 @@ class DigitEasyPayConfig{
     );
   }
 
+  /// Converts the DigitEasyPayConfig object to a map representation.
+  ///
+  /// @return A map with the configuration properties.
   Map<String, dynamic> toMap() {
     return {
       'environment': this.environment,
@@ -60,6 +81,10 @@ class DigitEasyPayConfig{
     };
   }
 
+  /// Factory method to create a DigitEasyPayConfig object from a map.
+  ///
+  /// @param map A map containing the configuration properties.
+  /// @return A DigitEasyPayConfig object.
   factory DigitEasyPayConfig.fromMap(Map<String, dynamic> map) {
     return DigitEasyPayConfig(
       environment: map['environment'] as DigitEasyPayEnvironment,
@@ -68,6 +93,4 @@ class DigitEasyPayConfig{
       password: map['password'] as String,
     );
   }
-
-//</editor-fold>
 }

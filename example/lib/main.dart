@@ -50,14 +50,15 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
-    var config = const DigitEasyPayConfig(
-      environment: DigitEasyPayEnvironment.live,
-      userKey: "prdigitp@yQos23",
-      password: "prdC2O23gvfcfj",
-      username: "us_prdigitpay@dmin",
+    const config = DigitEasyPayConfig(
+      environment: DigitEasyPayEnvironment.sandbox, // Use "live" for production mode
+      userKey: 'your_user_key',
+      username: 'your_username',
+      password: 'your_password',
     );
-    var digit = DigitEasyPay(config);
-    digit.checkout(context, amount: 1, l10n: const L10nEn(), theme: DefaultPaymentTheme());
+
+    var digitEasyPay = DigitEasyPay(config);
+    digitEasyPay.checkout(context, amount: 500, currency: DigitEasyPayCurrency.XOF);
   }
 
   @override

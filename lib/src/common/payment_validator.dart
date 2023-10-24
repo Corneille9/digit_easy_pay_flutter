@@ -1,5 +1,6 @@
 import 'package:digit_easy_pay_flutter/src/common/exceptions.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_constants.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 abstract class PaymentValidator{
   static bool isEmail(String value){
@@ -37,5 +38,15 @@ abstract class PaymentValidator{
 
   static bool _validateMobileCharge(){
     return true;
+  }
+
+  static Future<bool> tryLaunchUrl(String url) async {
+    try{
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication, webOnlyWindowName: 'Event Chat');
+      return true;
+    }catch(e,_){
+      DigitEasyPayException(e.toString());
+      return false;
+    }
   }
 }
