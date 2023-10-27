@@ -90,7 +90,9 @@ class DigitEasyPay {
       throw InvalidAmountException(amount);
     }
 
-    await initialize().then((value) => _checkout(context, amount: amount, currency: currency, theme: theme, l10n: l10n));
+    _validateInitialized();
+
+    await _checkout(context, amount: amount, currency: currency, theme: theme, l10n: l10n);
   }
 
   Future<void> _checkout(BuildContext context, {required num amount, DigitEasyPayCurrency currency = DigitEasyPayCurrency.XOF, PaymentTheme? theme, L10n? l10n}) async {
