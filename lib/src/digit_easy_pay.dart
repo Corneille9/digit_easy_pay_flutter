@@ -85,18 +85,18 @@ class DigitEasyPay {
   /// @param currency The currency to use for the payment (default is XOF).
   /// @param theme The payment theme (optional).
   /// @param l10n The localization settings for the payment (optional).
-  Future<void> checkout(BuildContext context, {required num amount, DigitEasyPayCurrency currency = DigitEasyPayCurrency.XOF, PaymentTheme? theme, L10n? l10n}) async {
+  Future<void> checkout(BuildContext context, {required num amount, DigitEasyPayCurrency currency = DigitEasyPayCurrency.XOF, PaymentTheme? theme, L10n? l10n, VoidCallback? onCancel, final Function(String reference, String paymentMethod)? onSuccess}) async {
     if (amount <= 0) {
       throw InvalidAmountException(amount);
     }
 
     _validateInitialized();
 
-    await _checkout(context, amount: amount, currency: currency, theme: theme, l10n: l10n);
+    await _checkout(context, amount: amount, currency: currency, theme: theme, l10n: l10n, onCancel: onCancel, onSuccess: onSuccess);
   }
 
-  Future<void> _checkout(BuildContext context, {required num amount, DigitEasyPayCurrency currency = DigitEasyPayCurrency.XOF, PaymentTheme? theme, L10n? l10n}) async {
-    _digitEasyPayCheckout ??= DigitEasyPayCheckout(context: context, amount: amount, provider: _provider, currency: currency, theme: theme, l10n: l10n);
+  Future<void> _checkout(BuildContext context, {required num amount, DigitEasyPayCurrency currency = DigitEasyPayCurrency.XOF, PaymentTheme? theme, L10n? l10n, VoidCallback? onCancel, final Function(String reference, String paymentMethod)? onSuccess}) async {
+    _digitEasyPayCheckout ??= DigitEasyPayCheckout(context: context, amount: amount, provider: _provider, currency: currency, theme: theme, l10n: l10n, onCancel:onCancel , onSuccess: onSuccess);
     _digitEasyPayCheckout?.init();
   }
 
