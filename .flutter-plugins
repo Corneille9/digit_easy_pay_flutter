@@ -1,4 +1,9 @@
 # This is a generated file; do not edit or check into version control.
+flutter_paypal_native=/Users/digitconsults/.pub-cache/hosted/pub.dev/flutter_paypal_native-2.0.2/
+flutter_stripe=/Users/digitconsults/.pub-cache/hosted/pub.dev/flutter_stripe-9.5.0+1/
+fluttertoast=/Users/digitconsults/.pub-cache/hosted/pub.dev/fluttertoast-8.2.4/
+stripe_android=/Users/digitconsults/.pub-cache/hosted/pub.dev/stripe_android-9.5.0+1/
+stripe_ios=/Users/digitconsults/.pub-cache/hosted/pub.dev/stripe_ios-9.5.0+1/
 url_launcher=/Users/digitconsults/.pub-cache/hosted/pub.dev/url_launcher-6.1.14/
 url_launcher_android=/Users/digitconsults/.pub-cache/hosted/pub.dev/url_launcher_android-6.1.0/
 url_launcher_ios=/Users/digitconsults/.pub-cache/hosted/pub.dev/url_launcher_ios-6.1.5/
@@ -6,3 +11,6 @@ url_launcher_linux=/Users/digitconsults/.pub-cache/hosted/pub.dev/url_launcher_l
 url_launcher_macos=/Users/digitconsults/.pub-cache/hosted/pub.dev/url_launcher_macos-3.0.7/
 url_launcher_web=/Users/digitconsults/.pub-cache/hosted/pub.dev/url_launcher_web-2.1.0/
 url_launcher_windows=/Users/digitconsults/.pub-cache/hosted/pub.dev/url_launcher_windows-3.0.8/
+webview_flutter=/Users/digitconsults/.pub-cache/hosted/pub.dev/webview_flutter-4.4.2/
+webview_flutter_android=/Users/digitconsults/.pub-cache/hosted/pub.dev/webview_flutter_android-3.12.1/
+webview_flutter_wkwebview=/Users/digitconsults/.pub-cache/hosted/pub.dev/webview_flutter_wkwebview-3.9.4/

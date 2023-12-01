@@ -10,6 +10,7 @@ class DigitEasyPayException implements Exception {
   static interpretError(DioException exception){
     var response = exception.response;
 
+    print(response?.statusCode);
     if(response?.statusCode==401 || response?.statusCode==403){
       throw AuthenticationException("Authentication Error: The provided API keys are invalid."
           "Please double-check that you have correctly configured the API keys in your request. Ensure that both the public key and private key are accurate and correspond to your account. If you have recently generated new keys, make sure to update them in your code."

@@ -5,7 +5,7 @@ import 'package:digit_easy_pay_flutter/src/common/payment_l10n.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_validator.dart';
 import 'package:digit_easy_pay_flutter/src/models/mobile_pay_request.dart';
 import 'package:digit_easy_pay_flutter/src/providers/payment_provider.dart';
-import 'package:digit_easy_pay_flutter/ui/views/checkout.dart';
+import 'package:digit_easy_pay_flutter/ui/views/digit_easy_pay_checkout.dart';
 import 'package:digit_easy_pay_flutter/ui/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -89,7 +89,7 @@ class _DigitEasyPayMobilePaymentBuilderState extends State<DigitEasyPayMobilePay
             contentPadding: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 5),
             validator: (value) {
               if(value==null)return l10n.invalidEmail;
-              return PaymentValidator.isEmail(value)?null:l10n.invalidEmail;
+              return PaymentUtils.isEmail(value)?null:l10n.invalidEmail;
             },
           ),
           const SizedBox(
@@ -111,7 +111,7 @@ class _DigitEasyPayMobilePaymentBuilderState extends State<DigitEasyPayMobilePay
 
               if(!_checkout.provider.config.environment.isLive)return null;
 
-              return PaymentValidator.isPhoneNumber(value)?null:l10n.invalidPhone;
+              return PaymentUtils.isPhoneNumber(value)?null:l10n.invalidPhone;
             },
           ),
           const SizedBox(
@@ -144,7 +144,7 @@ class _DigitEasyPayMobilePaymentBuilderState extends State<DigitEasyPayMobilePay
                   )
                 ],
                 if(!_paymentProvider.isLoading)Text(
-                  "${l10n.pay} ${PaymentValidator.formatAmount(_checkout.amount, _checkout.currency)}",
+                  "${l10n.pay} ${PaymentUtils.formatAmount(_checkout.amount, _checkout.currency)}",
                   style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                 )
               ],
@@ -168,7 +168,8 @@ class _DigitEasyPayMobilePaymentBuilderState extends State<DigitEasyPayMobilePay
     if(!_formKey.currentState!.validate()){
       return;
     }
-    MobilePayRequest mobilePayRequest = MobilePayRequest(phoneNumber: PaymentValidator.reformatPhone(_phoneNumber), amount: widget.checkout.amount, firstName: _firstnameController.text.trim(), lastName: _lastnameController.text.trim(), email: _emailController.text.trim());
+    FocusScope.of(context).unfocus();
+    MobilePayRequest mobilePayRequest = MobilePayRequest(phoneNumber: PaymentUtils.reformatPhone(_phoneNumber), amount: widget.checkout.amount, firstName: _firstnameController.text.trim(), lastName: _lastnameController.text.trim(), email: _emailController.text.trim());
     widget.onProcessPayment?.call(mobilePayRequest);
   }
 

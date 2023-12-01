@@ -1,8 +1,6 @@
-/**
- * PaymentService Class
- *
- * This class provides services for making mobile and card payments, initializing the HTTP client, and handling transaction status checks and country data retrieval.
- */
+/// PaymentService Class
+///
+/// This class provides services for making mobile and card payments, initializing the HTTP client, and handling transaction status checks and country data retrieval.
 import 'package:digit_easy_pay_flutter/src/common/digit_easy_pay_config.dart';
 import 'package:digit_easy_pay_flutter/src/models/card_pay_request.dart';
 import 'package:digit_easy_pay_flutter/src/models/card_pay_response.dart';
@@ -39,7 +37,7 @@ class PaymentService {
   /// @param mobilePayRequest The MobilePayRequest for the payment.
   /// @return A MobilePayResponse with the payment result.
   Future<MobilePayResponse> makeMobilePayment(DigitEasyPayPaymentMethod paymentMethod, MobilePayRequest mobilePayRequest) async {
-    var response = await client.post(path: "/mobile/make-payment", data: mobilePayRequest.toMap(), queryParameters: {"paymentMethod": paymentMethod.toSnakeCase});
+    var response = await client.post(path: "/mobile/make-payment", data: mobilePayRequest.toMap(), queryParameters: {"paymentMethod": paymentMethod.toSnakeCase, if(config.applicationKey!=null)"applicationKey":config.applicationKey});
     return MobilePayResponse.fromMap(response.data);
   }
 
@@ -48,7 +46,7 @@ class PaymentService {
   /// @param cardPayRequest The CardPayRequest for the payment.
   /// @return A CardPayResponse with the payment result.
   Future<CardPayResponse> makeCardPayment(CardPayRequest cardPayRequest) async {
-    var response = await client.post(path: "/card/request-payment", data: cardPayRequest.toMap());
+    var response = await client.post(path: "/card/request-payment", data: cardPayRequest.toMap(), queryParameters: {if(config.applicationKey!=null)"applicationKey":config.applicationKey});
     return CardPayResponse.fromMap(response.data);
   }
 

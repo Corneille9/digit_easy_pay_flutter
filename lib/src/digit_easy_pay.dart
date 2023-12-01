@@ -21,13 +21,12 @@ import 'package:digit_easy_pay_flutter/src/models/card_pay_response.dart';
 import 'package:digit_easy_pay_flutter/src/models/mobile_pay_request.dart';
 import 'package:digit_easy_pay_flutter/src/models/mobile_pay_response.dart';
 import 'package:digit_easy_pay_flutter/src/providers/payment_service.dart';
-import 'package:digit_easy_pay_flutter/ui/views/checkout.dart';
+import 'package:digit_easy_pay_flutter/ui/views/digit_easy_pay_checkout.dart';
 import 'package:flutter/material.dart';
 
 class DigitEasyPay {
   bool _initialized = false;
   final DigitEasyPayConfig config;
-  List<DigitEasyPayPaymentMethod> _paymentMethods = [];
   late PaymentService _provider;
   DigitEasyPayCheckout? _digitEasyPayCheckout;
 
@@ -43,16 +42,14 @@ class DigitEasyPay {
   /// This method should be called before using other methods of the SDK.
   ///
   /// @param paymentMethods A list of payment methods to support (default is all methods).
-  Future<void> initialize({List<DigitEasyPayPaymentMethod> paymentMethods = DigitEasyPayPaymentMethod.values}) async {
+  Future<void> initialize() async {
     assert(() {
-      if (paymentMethods.isEmpty) {
+      if (config.paymentMethods.isEmpty) {
         throw DigitEasyPayException('paymentMethods cannot be null or empty');
       }
       return true;
     }());
-    _paymentMethods = paymentMethods;
     _provider = PaymentService(config)..initialize();
-
     _initialized = true;
   }
 
@@ -62,7 +59,7 @@ class DigitEasyPay {
   /// @return A `CardPayResponse` object with the payment result.
   Future<CardPayResponse?> makeCardPayment({required CardPayRequest charge}) async {
     _validateInitialized();
-    PaymentValidator.validateCharge(method: DigitEasyPayPaymentMethod.visa);
+    PaymentUtils.validateCharge(method: DigitEasyPayPaymentMethod.visa);
 
     return await _provider.makeCardPayment(charge);
   }
@@ -74,7 +71,7 @@ class DigitEasyPay {
   /// @return A `MobilePayResponse` object with the payment result.
   Future<MobilePayResponse?> makeMobilePayment({required DigitEasyPayPaymentMethod method, required MobilePayRequest charge}) async {
     _validateInitialized();
-    PaymentValidator.validateCharge(method: method);
+    PaymentUtils.validateCharge(method: method);
     return await _provider.makeMobilePayment(method, charge);
   }
 
@@ -85,24 +82,22 @@ class DigitEasyPay {
   /// @param currency The currency to use for the payment (default is XOF).
   /// @param theme The payment theme (optional).
   /// @param l10n The localization settings for the payment (optional).
-  Future<void> checkout(BuildContext context, {required num amount, DigitEasyPayCurrency currency = DigitEasyPayCurrency.XOF, PaymentTheme? theme, L10n? l10n, VoidCallback? onCancel, final Function(String reference, String paymentMethod)? onSuccess}) async {
+  Future<void> checkout(BuildContext context, {required num amount, DigitEasyPayCurrency currency = DigitEasyPayCurrency.XOF, PaymentTheme? theme, L10n? l10n, VoidCallback? onCancel, final DigitEasyPayCallback? onSuccess}) async {
     if (amount <= 0) {
       throw InvalidAmountException(amount);
     }
-
     _validateInitialized();
 
     await _checkout(context, amount: amount, currency: currency, theme: theme, l10n: l10n, onCancel: onCancel, onSuccess: onSuccess);
   }
 
-  Future<void> _checkout(BuildContext context, {required num amount, DigitEasyPayCurrency currency = DigitEasyPayCurrency.XOF, PaymentTheme? theme, L10n? l10n, VoidCallback? onCancel, final Function(String reference, String paymentMethod)? onSuccess}) async {
+  Future<void> _checkout(BuildContext context, {required num amount, DigitEasyPayCurrency currency = DigitEasyPayCurrency.XOF, PaymentTheme? theme, L10n? l10n, VoidCallback? onCancel, final DigitEasyPayCallback? onSuccess}) async {
     _digitEasyPayCheckout ??= DigitEasyPayCheckout(context: context, amount: amount, provider: _provider, currency: currency, theme: theme, l10n: l10n, onCancel:onCancel , onSuccess: onSuccess);
     _digitEasyPayCheckout?.init();
   }
 
   /// Dispose of the DigitEasyPay instance.
   void dispose() {
-    _paymentMethods = [];
     _provider.dispose();
     _initialized = false;
     _digitEasyPayCheckout = null;
@@ -114,9 +109,4 @@ class DigitEasyPay {
       throw DigitEasyPayNotInitializedException('DigitEasyPay has not been initialized. The SDK has to be initialized before use');
     }
   }
-
-  /// Get the list of supported payment methods.
-  ///
-  /// @return A list of supported payment methods.
-  List<DigitEasyPayPaymentMethod> get paymentMethods => _paymentMethods;
 }

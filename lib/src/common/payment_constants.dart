@@ -7,8 +7,12 @@ enum DigitEasyPayCurrency { AED, AFN, ALL, AMD, ANG, AOA, ARS, AUD, AWG, AZN, BA
 
 // ignore: constant_identifier_names
 enum TransactionStatus { SUCCESSFUL, PENDING, FAILED }
+enum FedapayTransactionStatus{pending, approved, declined, canceled, refunded, transferred}
 
 enum DigitEasyPayPaymentMethod {momo, flooz, visa}
+
+// ignore: constant_identifier_names
+enum DigitEasyPayPaymentSource {QOSIC, PAYPAL, STRIPE, KKIAPAY, FEDAPAY}
 
 extension EnvironmentExtension on DigitEasyPayEnvironment {
   bool get isLive => this==DigitEasyPayEnvironment.live;
@@ -49,3 +53,5 @@ extension DigitEasyPayPaymentMethodExtension on DigitEasyPayPaymentMethod {
     return name.replaceAllMapped(RegExp('(?<=[a-z])[A-Z]'), (m) => '_${m.group(0)}').toLowerCase();
   }
 }
+
+typedef DigitEasyPayCallback = void Function(String reference, DigitEasyPayPaymentSource source, String paymentMethod);

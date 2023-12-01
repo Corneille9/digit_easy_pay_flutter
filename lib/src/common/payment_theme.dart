@@ -37,6 +37,7 @@ const secondaryDark = Color(0xff2b2250);
 abstract class PaymentTheme {
   /// Creates a new chat theme based on provided colors and text styles.
   const PaymentTheme({
+    this.isLight = true,
     required this.backgroundColor,
     required this.backgroundSubtleColor,
     required this.errorColor,
@@ -53,8 +54,10 @@ abstract class PaymentTheme {
     required this.textColor,
     required this.primaryColor,
     required this.dialogBackgroundColor,
+    required this.paymentSourceShadowColor,
   });
 
+  final bool isLight;
   /// Used as a background color of a chat widget
   final Color backgroundColor;
 
@@ -97,6 +100,8 @@ abstract class PaymentTheme {
   /// Primary color of the chat used as a background of sent messages
   /// and statuses
   final Color primaryColor;
+
+  final Color paymentSourceShadowColor;
 }
 
 /// Default chat theme which extends [PaymentTheme]
@@ -106,6 +111,7 @@ class DefaultPaymentTheme extends PaymentTheme {
   /// override only a couple of properties, otherwise create a new class
   /// which extends [PaymentTheme]
   DefaultPaymentTheme({
+    bool isLight = true,
     Color backgroundColor = neutral7,
     Color backgroundSubtleColor = neutral0Subtle,
     Color errorColor = error,
@@ -135,6 +141,7 @@ class DefaultPaymentTheme extends PaymentTheme {
     Color primaryColor = primary,
     Color dialogBackgroundColor = neutral7,
   }) :super(
+    isLight: isLight,
     backgroundColor: backgroundColor,
     backgroundSubtleColor: backgroundSubtleColor,
     errorColor: errorColor,
@@ -154,6 +161,7 @@ class DefaultPaymentTheme extends PaymentTheme {
     ),
     primaryColor: primaryColor,
     dialogBackgroundColor: dialogBackgroundColor,
+    paymentSourceShadowColor: const Color(0xFFECECEC),
   );
 }
 
@@ -165,6 +173,7 @@ class DarkPaymentTheme extends PaymentTheme {
   /// which extends [PaymentTheme]
 
   DarkPaymentTheme({
+    bool isLight = false,
     Color backgroundColor = Colors.black,
     Color backgroundSubtleColor = neutral0Subtle,
     Color errorColor = error,
@@ -193,7 +202,9 @@ class DarkPaymentTheme extends PaymentTheme {
     InputBorder? inputBorder,
     Color primaryColor = primary,
     Color dialogBackgroundColor = dark,
+    Color paymentSourceShadowColor = const Color(0xff1d1c21),
   }) :super(
+          isLight: isLight,
           backgroundColor: backgroundColor,
           backgroundSubtleColor: backgroundSubtleColor,
           errorColor: errorColor,
@@ -213,5 +224,6 @@ class DarkPaymentTheme extends PaymentTheme {
           ),
           primaryColor: primaryColor,
           dialogBackgroundColor: dialogBackgroundColor,
+          paymentSourceShadowColor: paymentSourceShadowColor,
         );
 }

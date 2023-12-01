@@ -21,14 +21,12 @@ class DigitEasyPayCheckout{
   final PaymentService provider;
   final PaymentTheme theme;
   final L10n? l10n;
-  // final PageController controller = PageController();
   final VoidCallback? onCancel;
-  final Function(String reference, String paymentMethod)? onSuccess;
+  final DigitEasyPayCallback? onSuccess;
   final ValueNotifier<DigitEasyPayPaymentMethod> selectedMethod = ValueNotifier(DigitEasyPayPaymentMethod.momo);
 
   DigitEasyPayCheckout({required this.context, required this.amount, required this.currency, required this.provider,this.l10n, this.onCancel, this.onSuccess, PaymentTheme? theme}):theme = theme??DefaultPaymentTheme();
 
-  
   void onMethodChange(DigitEasyPayPaymentMethod method){
     // controller.animateToPage(DigitEasyPayPaymentMethod.values.indexOf(method), duration: const Duration(milliseconds: 500), curve: Curves.ease);
   }
@@ -51,8 +49,11 @@ class DigitEasyPayCheckout{
       bottomSheetColor: theme.backgroundColor,
       providers: [
         ChangeNotifierProvider(create: (context) => CountryProvider()..getCountries(this),),
-        ChangeNotifierProvider(create: (context) => PaymentProvider()),
+        ChangeNotifierProvider(create: (context) => PaymentProvider(theme: theme)),
       ],
+      onWillPop: () async{
+        return false;
+      },
       headerBuilder: (context, bottomSheetOffset) => getHeaders(context),
       bodyBuilder: (context, bottomSheetOffset) {
         return SliverChildListDelegate(
@@ -62,8 +63,6 @@ class DigitEasyPayCheckout{
         );
       },
       anchors: [0.5, 1],
-      // isSafeArea: true,
-      // isModal: true
     );
   }
 
@@ -80,7 +79,7 @@ class DigitEasyPayCheckout{
                 if(countryProvider.hasData)Column(
                   children: [
                     const SizedBox(height: 15,),
-                    Image.asset(PaymentImages.digitEasyPayAdaptative, package: "digit_easy_pay_flutter",),
+                    Image.asset(theme.isLight?PaymentImages.digitEasyPayLight:PaymentImages.digitEasyPayDark, package: "digit_easy_pay_flutter", height: 55,),
                     const SizedBox(height: 10,),
                     RichText(
                       maxLines: 1,
@@ -91,7 +90,7 @@ class DigitEasyPayCheckout{
                                 style: TextStyle(fontWeight: FontWeight.w900, color: theme.textColor)
                             ),
                             TextSpan(
-                              text: " ${PaymentValidator.formatAmount(amount, currency)}",
+                              text: " ${PaymentUtils.formatAmount(amount, currency)}",
                               style: TextStyle(fontWeight: FontWeight.w900, color: theme.primaryColor),
                             )
                           ]
@@ -146,7 +145,7 @@ class DigitEasyPayCheckout{
     Future.delayed(const Duration(seconds: 5), () {
       int count = 0;
       Navigator.of(context).popUntil((_) => count++ >= (isPop?1:2));
-      onSuccess?.call(ref, selectedMethod.value.toSnakeCase);
+      onSuccess?.call(ref, DigitEasyPayPaymentSource.QOSIC, selectedMethod.value.toSnakeCase);
     },);
 
     showDialog(context: context, barrierDismissible:false, builder: (context) {
@@ -180,7 +179,6 @@ class DigitEasyPayCheckout{
       if(!isPop)Navigator.pop(context);
     },);
     showDialog(context: context, barrierDismissible:false, builder: (context) {
-
       return Dialog(
         backgroundColor: theme.dialogBackgroundColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -218,7 +216,6 @@ class DigitEasyPayCheckout{
     }
 
     showDialog(context: pcontext, barrierDismissible:true, builder: (context) {
-
       return Dialog(
         backgroundColor: theme.dialogBackgroundColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),

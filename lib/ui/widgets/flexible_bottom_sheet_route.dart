@@ -36,6 +36,7 @@ Future<T?> showFlexibleBottomSheet<T>({
   required BuildContext context,
   required FlexibleDraggableScrollableWidgetBuilder builder,
   DraggableScrollableController? draggableScrollableController,
+  List<SingleChildWidget> providers = const [],
   double? minHeight,
   double? initHeight,
   double? maxHeight,
@@ -53,6 +54,7 @@ Future<T?> showFlexibleBottomSheet<T>({
   bool isSafeArea = false,
   BoxDecoration? decoration,
   bool useRootScaffold = true,
+  WillPopCallback? onWillPop,
 }) {
   assert(debugCheckHasMediaQuery(context));
   assert(debugCheckHasMaterialLocalizations(context));
@@ -80,6 +82,8 @@ Future<T?> showFlexibleBottomSheet<T>({
       isSafeArea: isSafeArea,
       decoration: decoration,
       useRootScaffold: useRootScaffold,
+      providers: providers,
+      onWillPop: onWillPop,
     ),
   );
 }
@@ -142,6 +146,7 @@ Future<T?> showStickyFlexibleBottomSheet<T>({
   bool isSafeArea = false,
   bool useRootScaffold = true,
   L10n? l10n,
+  WillPopCallback? onWillPop,
 }) {
   assert(maxHeaderHeight != null || headerHeight != null);
   assert(debugCheckHasMediaQuery(context));
@@ -174,7 +179,8 @@ Future<T?> showStickyFlexibleBottomSheet<T>({
       isSafeArea: isSafeArea,
       useRootScaffold: useRootScaffold,
       providers: providers,
-      l10n: l10n
+      l10n: l10n,
+      onWillPop: onWillPop
     ),
   );
 }
@@ -206,6 +212,7 @@ class _FlexibleBottomSheetRoute<T> extends PopupRoute<T> {
   final bool useRootScaffold;
   final List<SingleChildWidget> providers;
   final L10n? l10n;
+  final WillPopCallback? onWillPop;
 
   @override
   final String? barrierLabel;
@@ -250,6 +257,7 @@ class _FlexibleBottomSheetRoute<T> extends PopupRoute<T> {
     this.barrierBottomSheetColor,
     this.duration,
     this.l10n,
+    this.onWillPop,
     super.settings,
   });
 
@@ -322,9 +330,14 @@ class _FlexibleBottomSheetRoute<T> extends PopupRoute<T> {
       bottomSheet = Theme(data: theme!, child: bottomSheet);
     }
 
-    return isSafeArea
-        ? SafeArea(child: bottomSheet, bottom: false)
-        : bottomSheet;
+    return WillPopScope(
+      onWillPop: onWillPop??() async{
+        return true;
+      },
+      child: isSafeArea
+        ? SafeArea(bottom: false, child: bottomSheet)
+        : bottomSheet,
+    );
   }
 
   @override

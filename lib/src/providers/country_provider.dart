@@ -3,7 +3,7 @@
 /// This class provides a list of countries and handles the retrieval of country data for a payment checkout. It also manages loading and error states and can be used in combination with a Flutter provider for state management.
 import 'package:digit_easy_pay_flutter/digit_easy_pay_flutter.dart';
 import 'package:digit_easy_pay_flutter/src/models/country.dart';
-import 'package:digit_easy_pay_flutter/ui/views/checkout.dart';
+import 'package:digit_easy_pay_flutter/ui/views/digit_easy_pay_checkout.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 

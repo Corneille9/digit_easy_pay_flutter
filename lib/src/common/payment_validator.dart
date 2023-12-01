@@ -1,8 +1,10 @@
 import 'package:digit_easy_pay_flutter/src/common/exceptions.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_constants.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-abstract class PaymentValidator{
+abstract class PaymentUtils{
   static bool isEmail(String value){
     return RegExp(r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$').hasMatch(value);
   }
@@ -40,13 +42,61 @@ abstract class PaymentValidator{
     return true;
   }
 
-  static Future<bool> tryLaunchUrl(String url) async {
+  static Future<bool> tryLaunchUrl(String url, {LaunchMode mode = LaunchMode.externalNonBrowserApplication, WebViewConfiguration webViewConfiguration = const WebViewConfiguration(), String webOnlyWindowName = ""}) async {
     try{
-      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication, webOnlyWindowName: 'Event Chat');
+      await launchUrl(Uri.parse(url), mode: mode, webOnlyWindowName: webOnlyWindowName, webViewConfiguration: webViewConfiguration);
       return true;
     }catch(e,_){
       DigitEasyPayException(e.toString());
       return false;
+    }
+  }
+
+  static Future<num?> convertAmount(num amount, {String from = "XOF", String to = "USD"}) async {
+    if (to == from) return amount;
+    final Dio httpClient = Dio();
+    try {
+      var headers = {"apikey": "MBbe7yvGcCUN5auslcmeLeWao1R4l6Wa",};
+      var queryParameters = {"from": from, "to": to, "amount": amount,};
+      var response = await httpClient.get("https://api.apilayer.com/currency_data/convert", queryParameters: queryParameters, options: Options(headers: headers),);
+      debugPrint("AppUtils - convertAmount - amount: $amount, from: $from, to: $to, response: ${response.data}");
+      if(response.data["success"]==true) {
+        return response.data["result"];
+      }
+      return null;
+    } catch (e, _) {
+      debugPrint(e.toString());
+      debugPrintStack(stackTrace: _);
+      if (e is DioException) {
+        if(e.response?.statusCode==429) {
+          debugPrint("AppUtils - convertAmount - error 429, retrying with ninja api");
+          return await convertAmountWithNinjaApi(amount);
+        }
+        debugPrint(e.response?.data.toString());
+      }
+      return null;
+    }
+  }
+
+  static Future<num?> convertAmountWithNinjaApi(num amount, {String from = "XOF", String to = "USD"}) async {
+    if (to == from) return amount;
+    final Dio httpClient = Dio();
+    try {
+      var headers = {"X-Api-Key": "GXwfO3iwWn6vsSB6gebzaA==fdrdSy2yJiQKvZWg",};
+      var queryParameters = {"have": from, "want": to, "amount": amount,};
+      var response = await httpClient.get("https://api.api-ninjas.com/v1/convertcurrency", queryParameters: queryParameters, options: Options(headers: headers),);
+      debugPrint("AppUtils - convertAmount - amount: $amount, from: $from, to: $to, response: ${response.data}");
+      if(response.statusCode==200) {
+        return response.data["new_amount"];
+      }
+      return null;
+    } catch (e, _) {
+      debugPrint(e.toString());
+      debugPrintStack(stackTrace: _);
+      if (e is DioException) {
+        debugPrint(e.response?.data.toString());
+      }
+      return null;
     }
   }
 }

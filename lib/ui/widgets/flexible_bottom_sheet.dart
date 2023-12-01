@@ -491,7 +491,7 @@ class _ContentState extends State<_Content> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.builder != null) {
+    if (widget.builder != null && widget.providers.isNotEmpty) {
       return Material(
         type: MaterialType.transparency,
         child: DecoratedBox(
@@ -505,6 +505,23 @@ class _ContentState extends State<_Content> {
                 widget.scrollController,
                 widget.currentExtent,
               ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (widget.builder != null) {
+      return Material(
+        type: MaterialType.transparency,
+        child: DecoratedBox(
+          decoration: widget.decoration ?? const BoxDecoration(),
+          child: SizedBox(
+            key: _contentKey,
+            child: widget.builder!(
+              context,
+              widget.scrollController,
+              widget.currentExtent,
             ),
           ),
         ),

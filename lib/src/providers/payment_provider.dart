@@ -3,20 +3,29 @@
 /// This class provides a payment provider that handles mobile and card payments, including handling payment status streams and transactions. It uses the `PaymentStatusStreamManager` to manage the status of transactions and notifies the user of successful or failed payments.
 import 'package:digit_easy_pay_flutter/src/common/exceptions.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_constants.dart';
-import 'package:digit_easy_pay_flutter/src/common/payment_validator.dart';
+import 'package:digit_easy_pay_flutter/src/common/payment_theme.dart';
 import 'package:digit_easy_pay_flutter/src/models/card_pay_request.dart';
 import 'package:digit_easy_pay_flutter/src/models/card_pay_response.dart';
 import 'package:digit_easy_pay_flutter/src/models/mobile_pay_request.dart';
 import 'package:digit_easy_pay_flutter/src/models/mobile_pay_response.dart';
 import 'package:digit_easy_pay_flutter/src/providers/payment_status_stream_manager.dart';
-import 'package:digit_easy_pay_flutter/ui/views/checkout.dart';
+import 'package:digit_easy_pay_flutter/ui/views/digit_easy_pay_checkout.dart';
+import 'package:digit_easy_pay_flutter/ui/widgets/flexible_bottom_sheet_route.dart';
+import 'package:digit_easy_pay_flutter/ui/widgets/qosic_payment_webview.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class PaymentProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool _hasError = false;
+  bool _isWebViewOpen = false;
   PaymentStatusStreamManager? _statusStreamManager;
+  final PaymentTheme theme;
+
+
+  PaymentProvider({
+    required this.theme,
+  });
 
   bool get hasData => true;
 
@@ -101,7 +110,9 @@ class PaymentProvider extends ChangeNotifier {
       throw DigitEasyPayException(error.toString());
     });
 
-    await PaymentValidator.tryLaunchUrl(cardPayResponse.url);
+    // await PaymentUtils.tryLaunchUrl(cardPayResponse.url, mode: LaunchMode.inAppWebView, webViewConfiguration: const WebViewConfiguration(enableJavaScript: true, enableDomStorage: true));
+
+    Future(() => _showWebView(checkout, cardPayResponse.url),);
 
     _statusStreamManager = PaymentStatusStreamManager(
       checkout.provider,
@@ -119,16 +130,61 @@ class PaymentProvider extends ChangeNotifier {
 
       if (status == TransactionStatus.SUCCESSFUL) {
         cancelStream();
+        if(_isWebViewOpen)Navigator.pop(checkout.context);
         checkout.onPaySuccess(ref: cardPayResponse.reference);
         return;
       }
 
       if (status == TransactionStatus.FAILED) {
         cancelStream();
+        if(_isWebViewOpen)Navigator.pop(checkout.context);
         checkout.onPayError.call(ref: cardPayResponse.reference);
         return;
       }
     });
+  }
+
+  Future<void> _showWebView(DigitEasyPayCheckout checkout, String url) async {
+    if(_isWebViewOpen)return;
+    _isWebViewOpen = true;
+
+    await showFlexibleBottomSheet(
+      minHeight: .5,
+      initHeight: .98,
+      maxHeight: 1,
+      isDismissible: false,
+      isCollapsible: false,
+      bottomSheetBorderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20)
+      ),      context: checkout.context,
+      bottomSheetColor: theme.backgroundColor,
+      onWillPop: () async{
+        return false;
+      },
+      builder: (context, scrollController, bottomSheetOffset) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              color: theme.backgroundColor,
+              width: double.infinity,
+              padding: const EdgeInsets.all(8.0),
+              child: TextButton(
+                  onPressed: () async {
+                    Navigator.pop(context);
+                  },
+                  child: Text(checkout.l10n!.cancelPayment, style: TextStyle(color: theme.textColor),)
+              ),
+            ),
+            Expanded(child: QosicPaymentWebView(
+              theme: theme,
+              url: url,
+            ),),
+          ],
+        );
+      },
+    ).whenComplete(() => _isWebViewOpen = false);
   }
 
   /// Cancel the payment status stream and reset the state.

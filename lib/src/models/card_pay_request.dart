@@ -35,10 +35,10 @@ class CardPayRequest{
     required this.department,
     required this.buildingNumber,
     required this.email,
-    required this.postalCode,
-    required this.emailDomain,
+    this.postalCode = "",
+    this.emailDomain = "",
     required this.country,
-    required this.iso2Code,
+    this.iso2Code = "",
   });
 
 
@@ -88,8 +88,7 @@ class CardPayRequest{
   }
 
   Map<String, dynamic> toMap() {
-
-    return {
+    var map = {
       'phoneNumber': this.phoneNumber,
       'totalAmount': this.totalAmount,
       'firstName': this.firstName,
@@ -104,11 +103,12 @@ class CardPayRequest{
       'buildingNumber': this.buildingNumber,
       'email': this.email,
       // 'postalCode': this.postalCode,
-
       // 'emailDomain': this.emailDomain,
       'country': this.country.toMap(),
       // 'iso2Code': this.iso2Code,
     };
+    // map.removeWhere((key, value) => value.toString().isEmpty);
+    return map;
   }
 
   factory CardPayRequest.fromMap(Map<String, dynamic> map) {

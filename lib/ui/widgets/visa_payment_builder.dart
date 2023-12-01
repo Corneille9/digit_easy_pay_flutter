@@ -5,7 +5,7 @@ import 'package:digit_easy_pay_flutter/src/common/payment_validator.dart';
 import 'package:digit_easy_pay_flutter/src/models/card_pay_request.dart';
 import 'package:digit_easy_pay_flutter/src/models/country.dart';
 import 'package:digit_easy_pay_flutter/src/providers/payment_provider.dart';
-import 'package:digit_easy_pay_flutter/ui/views/checkout.dart';
+import 'package:digit_easy_pay_flutter/ui/views/digit_easy_pay_checkout.dart';
 import 'package:digit_easy_pay_flutter/ui/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -149,7 +149,7 @@ class _DigitEasyPayVisaPaymentBuilderState extends State<DigitEasyPayVisaPayment
                 const EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
                 validator: (value) {
                   if(value==null)return l10n.invalidEmail;
-                  return PaymentValidator.isEmail(value)?null:l10n.invalidEmail;
+                  return PaymentUtils.isEmail(value)?null:l10n.invalidEmail;
                 },
               ),
               const SizedBox(
@@ -168,7 +168,7 @@ class _DigitEasyPayVisaPaymentBuilderState extends State<DigitEasyPayVisaPayment
                 },
                 validator: (value) {
                   if(value==null)return l10n.invalidPhone;
-                  return PaymentValidator.isPhoneNumber(value)?null:l10n.invalidPhone;
+                  return PaymentUtils.isPhoneNumber(value)?null:l10n.invalidPhone;
                 },
               ),
               const SizedBox(
@@ -272,18 +272,18 @@ class _DigitEasyPayVisaPaymentBuilderState extends State<DigitEasyPayVisaPayment
               const SizedBox(
                 height: 15,
               ),
-              CustomTextField(
-                theme: _checkout.theme,
-                controller: _postalCodeController,
-                hintText: '',
-                label: l10n.postalCode,
-                fontSize: 12,
-                contentPadding: const EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
-                validator: (value) {
-                  if(value==null || value.trim().isEmpty)return l10n.invalidField;
-                  return null;
-                },
-              ),
+              // CustomTextField(
+              //   theme: _checkout.theme,
+              //   controller: _postalCodeController,
+              //   hintText: '',
+              //   label: l10n.postalCode,
+              //   fontSize: 12,
+              //   contentPadding: const EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
+              //   validator: (value) {
+              //     if(value==null || value.trim().isEmpty)return l10n.invalidField;
+              //     return null;
+              //   },
+              // ),
             ],
           ),
         ),
@@ -314,7 +314,7 @@ class _DigitEasyPayVisaPaymentBuilderState extends State<DigitEasyPayVisaPayment
                 )
               ],
               if(!_paymentProvider.isLoading)Text(
-                "${l10n.pay} ${PaymentValidator.formatAmount(_checkout.amount, _checkout.currency)}",
+                "${l10n.pay} ${PaymentUtils.formatAmount(_checkout.amount, _checkout.currency)}",
                 style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
               )
             ],
@@ -338,8 +338,10 @@ class _DigitEasyPayVisaPaymentBuilderState extends State<DigitEasyPayVisaPayment
       return;
     }
 
+    FocusScope.of(context).unfocus();
+
     CardPayRequest cardPayRequest = CardPayRequest(
-      phoneNumber: PaymentValidator.reformatPhone(_phoneNumber),
+      phoneNumber: PaymentUtils.reformatPhone(_phoneNumber),
       totalAmount: widget.checkout.amount,
       firstName: _firstnameController.text.trim(),
       lastName: _lastnameController.text.trim(),
@@ -352,10 +354,10 @@ class _DigitEasyPayVisaPaymentBuilderState extends State<DigitEasyPayVisaPayment
       department:_departmentController.text.trim(),
       buildingNumber: _buildingNumberController.text.trim(),
       email: _emailController.text.trim(),
-      postalCode: _postalCodeController.text.trim(),
-      emailDomain: _emailController.text.trim(),
-      country: countries.firstWhere((element) => element.id.toString()==_countryController.text.trim()),
-      iso2Code: _countryController.text.trim(),
+      // postalCode: _postalCodeController.text.trim(),
+      // emailDomain: _emailController.text.trim(),
+      country: countries.firstWhere((element) => element.id.toString()==_countryController.text.trim(), orElse: () => countries.firstWhere((element) => element.code=="BJ"),),
+      // iso2Code: _countryController.text.trim(),
     );
 
     widget.onProcessPayment?.call(cardPayRequest);
