@@ -66,7 +66,7 @@ class StripePaymentProvider extends ChangeNotifier{
 
   Future<void> _processPayment({required String referenceId}) async {
     await Stripe.instance.presentPaymentSheet().then((value) {
-      onSuccess?.call(referenceId, DigitEasyPayPaymentSource.STRIPE, "stripe");
+      onSuccess?.call(referenceId, DigitEasyPayPaymentSource.STRIPE, "card");
     }).onError((error, stackTrace) {
       debugPrint("Stripe Payment error: $error");
       debugPrintStack(stackTrace: stackTrace);

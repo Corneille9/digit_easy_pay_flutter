@@ -127,7 +127,7 @@ class FedapayPaymentProvider extends ChangeNotifier{
     // }
 
     if(status==FedapayTransactionStatus.approved){
-      onSuccess?.call(transactionId!, DigitEasyPayPaymentSource.FEDAPAY, "");
+      onSuccess?.call(transactionId!, DigitEasyPayPaymentSource.FEDAPAY, transaction?["mode"]??"unknown");
       return true;
     }
 
