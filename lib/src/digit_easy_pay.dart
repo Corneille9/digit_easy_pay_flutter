@@ -22,6 +22,7 @@ import 'package:digit_easy_pay_flutter/src/models/mobile_pay_request.dart';
 import 'package:digit_easy_pay_flutter/src/models/mobile_pay_response.dart';
 import 'package:digit_easy_pay_flutter/src/providers/payment_service.dart';
 import 'package:digit_easy_pay_flutter/ui/views/digit_easy_pay_checkout.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class DigitEasyPay {
@@ -94,6 +95,17 @@ class DigitEasyPay {
   Future<void> _checkout(BuildContext context, {required num amount, DigitEasyPayCurrency currency = DigitEasyPayCurrency.XOF, PaymentTheme? theme, L10n? l10n, VoidCallback? onCancel, final DigitEasyPayCallback? onSuccess}) async {
     _digitEasyPayCheckout ??= DigitEasyPayCheckout(context: context, amount: amount, provider: _provider, currency: currency, theme: theme, l10n: l10n, onCancel:onCancel , onSuccess: onSuccess);
     _digitEasyPayCheckout?.init();
+  }
+
+  Future<dynamic> addExternalTransaction(Map<String, dynamic> data) async {
+    try{
+      return await _provider.addExternalTransaction(data);
+    }catch(e, _){
+      debugPrint(e.toString());
+      if(e is DioException)debugPrint(e.response?.data.toString());
+      debugPrintStack(stackTrace: _);
+      return null;
+    }
   }
 
   /// Dispose of the DigitEasyPay instance.

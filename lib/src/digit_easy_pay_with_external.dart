@@ -15,7 +15,9 @@ import 'package:digit_easy_pay_flutter/src/common/exceptions.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_constants.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_l10n.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_theme.dart';
+import 'package:digit_easy_pay_flutter/src/providers/payment_service.dart';
 import 'package:digit_easy_pay_flutter/ui/views/digit_easy_pay_external_checkout.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class DigitEasyPayEasyPayWithExternal {
@@ -66,6 +68,19 @@ class DigitEasyPayEasyPayWithExternal {
   Future<void> _checkout(BuildContext context, {required num amount, DigitEasyPayCurrency currency = DigitEasyPayCurrency.XOF, PaymentTheme? theme, required L10n l10n, VoidCallback? onCancel, DigitEasyPayCallback? onSuccess}) async {
     _externalCheckout ??=  DigitEasyPayExternalCheckout(context: context, paymentSources: _paymentSources,config: config, amount: amount, currency: currency, theme: theme, l10n: l10n, onCancel:onCancel , onSuccess: onSuccess);
     _externalCheckout?.init();
+  }
+
+  Future<dynamic> addExternalTransaction(Map<String, dynamic> data) async {
+    assert(config.digitEasyPayConfig!=null);
+    try{
+      var provider = PaymentService(config.digitEasyPayConfig!);
+      return await provider.addExternalTransaction(data);
+    }catch(e, _){
+      debugPrint(e.toString());
+      if(e is DioException)debugPrint(e.response?.data.toString());
+      debugPrintStack(stackTrace: _);
+      return null;
+    }
   }
 
   /// Dispose of the DigitEasyPay instance.

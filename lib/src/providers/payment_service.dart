@@ -66,4 +66,9 @@ class PaymentService {
     var response = await client.get(path: "/resources/countries/all");
     return ((response.data ?? []) as List).map((e) => Country.fromMap(e)).toList();
   }
+
+  Future<dynamic> addExternalTransaction(Map<String, dynamic> data) async {
+    var response = await client.post(path: "/externals-payments", data: data);
+    return response.data;
+  }
 }
