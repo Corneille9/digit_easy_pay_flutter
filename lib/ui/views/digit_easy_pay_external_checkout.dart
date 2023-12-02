@@ -25,6 +25,7 @@ class DigitEasyPayExternalCheckout{
   final VoidCallback? onCancel;
   final DigitEasyPayCallback? onSuccess;
   final ValueNotifier<DigitEasyPayPaymentMethod> selectedMethod = ValueNotifier(DigitEasyPayPaymentMethod.momo);
+  bool canPop = true;
 
   DigitEasyPayExternalCheckout({required this.context,required this.paymentSources, required this.config,required this.amount, required this.currency,required this.l10n, this.onCancel, this.onSuccess, PaymentTheme? theme}):theme = theme??DefaultPaymentTheme();
 
@@ -50,7 +51,7 @@ class DigitEasyPayExternalCheckout{
       context: context,
       bottomSheetColor: theme.backgroundColor,
       onWillPop: () async{
-        return false;
+        return canPop;
       },
       providers: [
         if(_hasSource(DigitEasyPayPaymentSource.QOSIC))ChangeNotifierProvider(create: (context) => DigitEasyPayPaymentProvider(
@@ -110,16 +111,19 @@ class DigitEasyPayExternalCheckout{
   }
 
   void onPaySuccess(String reference, DigitEasyPayPaymentSource source, String paymentMethod){
+    canPop = true;
     Fluttertoast.showToast(msg: l10n.paymentSuccessfully);
     Navigator.of(context).pop();
     onSuccess?.call(reference, source, paymentMethod);
   }
 
   void onPayError(){
+    canPop = true;
     Fluttertoast.showToast(msg: l10n.paymentFailed);
   }
 
   void onPayCancel(){
+    canPop = true;
     Fluttertoast.showToast(msg: l10n.paymentFailed);
     onCancel?.call();
   }
@@ -151,7 +155,10 @@ class _PaymentsBuilder extends StatelessWidget {
               child: Row(
                 children: [
                   InkWell(
-                    onTap: () => Navigator.of(context).pop(),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      checkout.onCancel?.call();
+                    },
                     borderRadius: BorderRadius.circular(100),
                     child: Container(
                       height: 25,
