@@ -3,7 +3,6 @@ import 'package:digit_easy_pay_flutter/src/common/digit_easy_pay_config.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_constants.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_l10n.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_theme.dart';
-import 'package:digit_easy_pay_flutter/src/common/payment_validator.dart';
 import 'package:digit_easy_pay_flutter/ui/widgets/fedapay_payment_webview.dart';
 import 'package:digit_easy_pay_flutter/ui/widgets/flexible_bottom_sheet_route.dart';
 import 'package:dio/dio.dart';
@@ -64,7 +63,7 @@ class FedapayPaymentProvider extends ChangeNotifier{
     }catch(e, _){
       onInitialized?.call();
       onError?.call();
-      debugPrint(e.toString());
+      debugPrint("Fedapay Payment error: $e");
       if(e is DioException)debugPrint(e.response?.data.toString());
       debugPrintStack(stackTrace: _);
     }

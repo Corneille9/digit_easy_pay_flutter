@@ -68,6 +68,8 @@ class StripePaymentProvider extends ChangeNotifier{
     await Stripe.instance.presentPaymentSheet().then((value) {
       onSuccess?.call(referenceId, DigitEasyPayPaymentSource.STRIPE, "stripe");
     }).onError((error, stackTrace) {
+      debugPrint("Stripe Payment error: $error");
+      debugPrintStack(stackTrace: stackTrace);
       onCancel?.call();
     },);
   }

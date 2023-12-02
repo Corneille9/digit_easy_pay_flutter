@@ -63,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //
     // digitEasyPay.checkout(context, amount: 500, currency: DigitEasyPayCurrency.XOF);
 
-    var digitpay =  DigitEasyPayEasyPayWithExternal(const PaymentConfig(
+     var digitPay =  DigitEasyPayEasyPayWithExternal(const PaymentConfig(
         digitEasyPayConfig: DigitEasyPayConfig(
           environment: DigitEasyPayEnvironment.sandbox, // Use "live" for production mode
           userKey: 'userKey',
@@ -86,12 +86,11 @@ class _MyHomePageState extends State<MyHomePage> {
             merchantDisplayName: "Merchant name",
           environment: DigitEasyPayEnvironment.sandbox
         ),
-      )
-    );
+      ));
 
-    digitpay.initialize(paymentSources: [DigitEasyPayPaymentSource.STRIPE, DigitEasyPayPaymentSource.PAYPAL, DigitEasyPayPaymentSource.FEDAPAY, DigitEasyPayPaymentSource.QOSIC]);
+    digitPay.initialize(paymentSources: [DigitEasyPayPaymentSource.STRIPE, DigitEasyPayPaymentSource.PAYPAL, DigitEasyPayPaymentSource.FEDAPAY, DigitEasyPayPaymentSource.QOSIC]);
 
-    digitpay.checkout(context,
+    digitPay.checkout(context,
         amount: 200,
         currency: DigitEasyPayCurrency.XOF,
         theme: DefaultPaymentTheme(),
