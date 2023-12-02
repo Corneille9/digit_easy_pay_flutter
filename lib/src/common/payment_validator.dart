@@ -68,11 +68,9 @@ abstract class PaymentUtils{
       debugPrint(e.toString());
       debugPrintStack(stackTrace: _);
       if (e is DioException) {
-        if(e.response?.statusCode==429) {
-          debugPrint("AppUtils - convertAmount - error 429, retrying with ninja api");
-          return await convertAmountWithNinjaApi(amount);
-        }
         debugPrint(e.response?.data.toString());
+        debugPrint("AppUtils - convertAmount - error 429, retrying with ninja api");
+        return await convertAmountWithNinjaApi(amount);
       }
       return null;
     }
