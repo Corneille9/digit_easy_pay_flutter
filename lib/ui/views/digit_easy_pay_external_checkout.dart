@@ -26,6 +26,7 @@ class DigitEasyPayExternalCheckout{
   final DigitEasyPayCallback? onSuccess;
   final ValueNotifier<DigitEasyPayPaymentMethod> selectedMethod = ValueNotifier(DigitEasyPayPaymentMethod.momo);
   bool canPop = true;
+  BuildContext? _context;
 
   DigitEasyPayExternalCheckout({required this.context,required this.paymentSources, required this.config,required this.amount, required this.currency,required this.l10n, this.onCancel, this.onSuccess, PaymentTheme? theme}):theme = theme??DefaultPaymentTheme();
 
@@ -97,6 +98,7 @@ class DigitEasyPayExternalCheckout{
       ],
       anchors: [.8, 1],
       builder: (context, scrollController, bottomSheetOffset) {
+        _context = context;
         return Container(
           height: double.infinity,
           width: double.infinity,
@@ -111,18 +113,21 @@ class DigitEasyPayExternalCheckout{
   }
 
   void onPaySuccess(String reference, DigitEasyPayPaymentSource source, String paymentMethod){
+    debugPrint("DigitEasyPayExternalCheckout payment successfully");
     canPop = true;
     Fluttertoast.showToast(msg: l10n.paymentSuccessfully);
-    Navigator.of(context).pop();
+    Future(() => Navigator.pop(_context??context),);
     onSuccess?.call(reference, source, paymentMethod);
   }
 
   void onPayError(){
+    debugPrint("DigitEasyPayExternalCheckout payment failed");
     canPop = true;
     Fluttertoast.showToast(msg: l10n.paymentFailed);
   }
 
   void onPayCancel(){
+    debugPrint("DigitEasyPayExternalCheckout payment canceled");
     canPop = true;
     Fluttertoast.showToast(msg: l10n.paymentFailed);
     onCancel?.call();
