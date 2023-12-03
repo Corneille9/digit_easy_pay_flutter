@@ -55,7 +55,7 @@ class PaypalPaymentProvider extends ChangeNotifier{
         },
         onSuccess: (data) {
           _flutterPaypalPlugin.removeAllPurchaseItems();
-          onSuccess?.call(referenceId, DigitEasyPayPaymentSource.PAYPAL, "card");
+          onSuccess?.call(referenceId, DigitEasyPayPaymentSource.PAYPAL, "visa_card");
           debugPrint("Paypal payment success");
         },
         onError: (data) {
