@@ -77,7 +77,7 @@ class StripePaymentProvider extends ChangeNotifier{
   Future<Map<String, dynamic>?> createPaymentIntent(num amount, String currency) async {
     try {
       Map<String, dynamic> body = {
-        'amount': amount,
+        'amount': amount.round(),
         'currency': currency,
         // 'payment_method_types[]': 'card'
       };
