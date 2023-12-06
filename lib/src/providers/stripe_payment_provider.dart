@@ -94,7 +94,7 @@ class StripePaymentProvider extends ChangeNotifier{
       debugPrint("Stripe payment error: $err");
       if(err is StripeConfigException)debugPrint(err.message);
       if(err is DioException) {
-        debugPrint(err.response?.data);
+        debugPrint(err.response?.data.toString());
       }
       debugPrintStack(stackTrace: stacktrace);
       return null;
