@@ -1,5 +1,4 @@
 import 'package:digit_easy_pay_flutter/src/common/digit_easy_pay_config.dart';
-import 'package:digit_easy_pay_flutter/src/common/inherited_l10n.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_constants.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_images.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_l10n.dart';
@@ -25,6 +24,7 @@ class DigitEasyPayExternalCheckout{
   final VoidCallback? onCancel;
   final DigitEasyPayCallback? onSuccess;
   final ValueNotifier<DigitEasyPayPaymentMethod> selectedMethod = ValueNotifier(DigitEasyPayPaymentMethod.momo);
+  ValueNotifier<bool> isInitializing = ValueNotifier(false);
   bool canPop = true;
   BuildContext? _context;
 
@@ -137,14 +137,13 @@ class DigitEasyPayExternalCheckout{
 class _PaymentsBuilder extends StatelessWidget {
   _PaymentsBuilder({Key? key, required this.checkout}) : super(key: key);
   final DigitEasyPayExternalCheckout checkout;
-  ValueNotifier<bool> isInitializing = ValueNotifier(false);
 
   bool hasSource(DigitEasyPayPaymentSource source){
     return checkout.paymentSources.contains(source);
   }
 
   void onInitialized(){
-    isInitializing.value = false;
+    checkout.isInitializing.value = false;
   }
 
   @override
@@ -215,8 +214,8 @@ class _PaymentsBuilder extends StatelessWidget {
                   padding: const EdgeInsets.all(25),
                   imagePath: PaymentImages.paypal,
                   onTap: () {
-                    if(isInitializing.value)return;
-                    isInitializing.value = true;
+                    if(checkout.isInitializing.value)return;
+                    checkout.isInitializing.value = true;
                     Provider.of<PaypalPaymentProvider>(context, listen: false).makePayment(onInitialized: onInitialized);
                   },),
                 if(hasSource(DigitEasyPayPaymentSource.STRIPE))
@@ -225,8 +224,8 @@ class _PaymentsBuilder extends StatelessWidget {
                     padding: const EdgeInsets.all(25),
                     imagePath: PaymentImages.stripe,
                     onTap: () {
-                      if(isInitializing.value)return;
-                      isInitializing.value = true;
+                      if(checkout.isInitializing.value)return;
+                      checkout.isInitializing.value = true;
                       Provider.of<StripePaymentProvider>(context, listen: false).makePayment(onInitialized: onInitialized);
                     }
                 ),
@@ -236,8 +235,8 @@ class _PaymentsBuilder extends StatelessWidget {
                   padding: const EdgeInsets.all(25),
                   imagePath: PaymentImages.fedapay,
                   onTap: () {
-                    if(isInitializing.value)return;
-                    isInitializing.value = true;
+                    if(checkout.isInitializing.value)return;
+                    checkout.isInitializing.value = true;
                     Provider.of<FedapayPaymentProvider>(context, listen: false).makePayment(context: context, onInitialized: onInitialized);
                   },
                 ),
@@ -246,7 +245,7 @@ class _PaymentsBuilder extends StatelessWidget {
           ],
         ),
         ValueListenableBuilder(
-          valueListenable: isInitializing,
+          valueListenable: checkout.isInitializing,
           builder: (context, value, child) {
             if(!value)return const SizedBox();
             return Container(
