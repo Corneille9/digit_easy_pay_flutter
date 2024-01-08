@@ -11,7 +11,7 @@ dependencies:
   dio: ^5.3.3
   flutter:
     sdk: flutter
-  flutter_paypal_native: ^2.0.2
+  flutter_paypal_native: ^2.1.0
   flutter_stripe: ^9.5.0+1
   fluttertoast: ^8.2.4
   provider: ^6.0.5

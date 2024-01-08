@@ -55,7 +55,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.1.2"
   dio:
     dependency: transitive
     description:
@@ -89,10 +89,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_paypal_native
-      sha256: "42d5b1e572928a283da08e9923b00676ca7784e9708f14340aa76b9a5a2c5757"
+      sha256: "3cf08364502e7c79e6eccdc7b0a9364a20ad844b2f9a4765e426a73baa085bb4"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2"
+    version: "2.1.0"
   flutter_stripe:
     dependency: transitive
     description:
