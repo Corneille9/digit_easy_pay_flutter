@@ -54,6 +54,8 @@ class PaymentProvider extends ChangeNotifier {
       if (error is DioException) {
         DigitEasyPayException.interpretError(error);
       }
+      debugPrint(error.toString());
+      debugPrintStack(stackTrace: stackTrace);
 
       throw DigitEasyPayException(error.toString());
     });
