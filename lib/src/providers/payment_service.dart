@@ -37,7 +37,9 @@ class PaymentService {
   /// @param mobilePayRequest The MobilePayRequest for the payment.
   /// @return A MobilePayResponse with the payment result.
   Future<MobilePayResponse> makeMobilePayment(DigitEasyPayPaymentMethod paymentMethod, MobilePayRequest mobilePayRequest) async {
+    print("request......... ${mobilePayRequest}");
     var response = await client.post(path: "/mobile/make-payment", data: mobilePayRequest.toMap(), queryParameters: {"paymentMethod": paymentMethod.toSnakeCase, if(config.applicationKey!=null)"applicationKey":config.applicationKey});
+    print("data:::::::: ${response.data}");
     return MobilePayResponse.fromMap(response.data);
   }
 
