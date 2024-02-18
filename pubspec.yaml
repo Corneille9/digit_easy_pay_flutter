@@ -8,15 +8,15 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  dio: ^5.3.3
+  dio: ^5.4.0
   flutter:
     sdk: flutter
   flutter_paypal_native: ^2.1.0
   flutter_stripe: ^9.5.0+1
   fluttertoast: ^8.2.4
   provider: ^6.0.5
-  url_launcher: ^6.1.14
-  webview_flutter: ^4.4.2
+  url_launcher: ^6.2.4
+  webview_flutter: ^4.5.0
 
 dev_dependencies:
   flutter_test:
