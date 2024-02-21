@@ -28,6 +28,7 @@ abstract class L10n {
   final String no;
 
   final String paymentSuccessfully;
+  final String paymentWaitingValidation;
   final String paymentFailed;
   final String cancelPayment;
   final String wantToCancel;
@@ -57,6 +58,7 @@ abstract class L10n {
     required this.yes,
     required this.no,
     required this.paymentSuccessfully,
+    required this.paymentWaitingValidation,
     required this.paymentFailed,
     required this.cancelPayment,
     required this.wantToCancel,
@@ -90,6 +92,7 @@ class L10nEn extends L10n {
     String yes = "Yes",
     String no = "No",
     String paymentSuccessfully = "Payment was successful",
+    String paymentWaitingValidation = "Your payment is pending validation. Thank you for your patience.",
     String paymentFailed = "Payment failed. Please try again or contact support",
     String cancelPayment = "Cancel Payment",
     String wantToCancel = "Are you sure you want to cancel the payment?",
@@ -118,6 +121,7 @@ class L10nEn extends L10n {
     yes: yes,
     no: no,
     paymentSuccessfully: paymentSuccessfully,
+    paymentWaitingValidation: paymentWaitingValidation,
     paymentFailed: paymentFailed,
     cancelPayment: cancelPayment,
     wantToCancel: wantToCancel,
@@ -152,6 +156,7 @@ class L10nFr extends L10n {
     String yes = "Oui",
     String no = "Non",
     String paymentSuccessfully = "Le paiement a été effectué avec succès",
+    String paymentWaitingValidation = "Votre paiement est en attente de validation. Merci de votre patience.",
     String paymentFailed = "Le paiement a échoué. Veuillez réessayer ou contacter le support",
     String cancelPayment = "Annuler le paiement",
     String wantToCancel = "Êtes-vous sûr de vouloir annuler le paiement ?",
@@ -180,6 +185,7 @@ class L10nFr extends L10n {
     yes: yes,
     no: no,
     paymentSuccessfully: paymentSuccessfully,
+    paymentWaitingValidation: paymentWaitingValidation,
     paymentFailed: paymentFailed,
     cancelPayment: cancelPayment,
     wantToCancel: wantToCancel,
@@ -213,6 +219,7 @@ class L10nCn extends L10n {
     String yes = "是",
     String no = "否",
     String paymentSuccessfully = "付款成功",
+    String paymentWaitingValidation = "您的付款正在等待验证。感谢您的耐心。",
     String paymentFailed = "付款失败，请重试或联系客服",
     String cancelPayment = "取消付款",
     String wantToCancel = "您确定要取消付款吗？",
@@ -241,6 +248,7 @@ class L10nCn extends L10n {
     yes: yes,
     no: no,
     paymentSuccessfully: paymentSuccessfully,
+    paymentWaitingValidation: paymentWaitingValidation,
     paymentFailed: paymentFailed,
     cancelPayment: cancelPayment,
     wantToCancel: wantToCancel,

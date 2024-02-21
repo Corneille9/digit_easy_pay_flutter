@@ -48,6 +48,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+
   void _incrementCounter() {
     // const config = DigitEasyPayConfig(
     //   environment: DigitEasyPayEnvironment.sandbox, // Use "live" for production mode
@@ -63,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //
     // digitEasyPay.checkout(context, amount: 500, currency: DigitEasyPayCurrency.XOF);
 
-     var digitPay =  DigitEasyPayEasyPayWithExternal(const PaymentConfig(
+    var digitPay =  DigitEasyPayEasyPayWithExternal(const PaymentConfig(
         digitEasyPayConfig: DigitEasyPayConfig(
           environment: DigitEasyPayEnvironment.sandbox, // Use "live" for production mode
           userKey: 'userKey',

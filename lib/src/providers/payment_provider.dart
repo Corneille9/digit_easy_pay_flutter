@@ -22,7 +22,6 @@ class PaymentProvider extends ChangeNotifier {
   PaymentStatusStreamManager? _statusStreamManager;
   final PaymentTheme theme;
 
-
   PaymentProvider({
     required this.theme,
   });
@@ -86,6 +85,21 @@ class PaymentProvider extends ChangeNotifier {
         return;
       }
     });
+  }
+
+  Future<void> testPay({required DigitEasyPayCheckout checkout, required MobilePayRequest charge}) async {
+    if (_isLoading) return;
+    _isLoading = true;
+    _hasError = false;
+    notifyListeners();
+
+    Future.delayed(const Duration(seconds: 10), () {
+      _hasError = true;
+      _isLoading = false;
+      notifyListeners();
+
+      checkout.onPayError.call(ref: "");
+    },);
   }
 
   /// Make a card payment using the provided checkout and charge details.

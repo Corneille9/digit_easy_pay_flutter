@@ -27,6 +27,9 @@ class DigitEasyPayCheckout{
 
   DigitEasyPayCheckout({required this.context, required this.amount, required this.currency, required this.provider,this.l10n, this.onCancel, this.onSuccess, PaymentTheme? theme}):theme = theme??DefaultPaymentTheme();
 
+  bool isShowLoader = false;
+
+
   void onMethodChange(DigitEasyPayPaymentMethod method){
     // controller.animateToPage(DigitEasyPayPaymentMethod.values.indexOf(method), duration: const Duration(milliseconds: 500), curve: Curves.ease);
   }
@@ -139,6 +142,11 @@ class DigitEasyPayCheckout{
   }
 
   void onPaySuccess({required String ref}){
+
+    if(isShowLoader){
+      Navigator.pop(context);
+    }
+
     var l10n = InheritedL10n.of(context).l10n;
 
     var isPop = false;
@@ -172,6 +180,10 @@ class DigitEasyPayCheckout{
   }
 
   void onPayError({required String ref}){
+    if(isShowLoader){
+      Navigator.pop(context);
+    }
+
     var l10n = InheritedL10n.of(context).l10n;
 
     var isPop = false;
@@ -202,13 +214,15 @@ class DigitEasyPayCheckout{
   }
 
   void onPayCancel(BuildContext pcontext){
+    if(isShowLoader){
+      Navigator.pop(context);
+    }
 
     var l10n = InheritedL10n.of(pcontext).l10n;
 
     var paymentProvider  = Provider.of<PaymentProvider>(pcontext, listen: false);
 
     if(!paymentProvider.isLoading){
-      int count = 0;
       Navigator.of(context).pop();
       paymentProvider.cancelStream();
       onCancel?.call();
@@ -284,12 +298,55 @@ class _DigitEasyPayPaymentBuilder extends StatefulWidget {
 }
 
 class _DigitEasyPayPaymentBuilderState extends State<_DigitEasyPayPaymentBuilder> with AutomaticKeepAliveClientMixin{
-
   DigitEasyPayCheckout get _checkout => widget.checkout;
 
   PaymentTheme get theme => _checkout.theme;
 
   L10n get l10n => InheritedL10n.of(context).l10n;
+
+  BuildContext get _context => context;
+
+  void onPayLoading(bool isLoading){
+    if(!isLoading || _checkout.isShowLoader){
+      return;
+    }
+
+    _checkout.isShowLoader = true;
+    var l10n = InheritedL10n.of(context).l10n;
+    showDialog(context: context, barrierDismissible:false, builder: (context) {
+      return Dialog(
+        backgroundColor: theme.dialogBackgroundColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 15),
+          decoration: BoxDecoration(
+              color: theme.dialogBackgroundColor,
+              borderRadius: BorderRadius.circular(15)
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: CircularProgressIndicator(color: theme.primaryColor),
+              ),
+              const SizedBox(height: 20,),
+              Text(l10n.paymentWaitingValidation, textAlign: TextAlign.center, style: TextStyle(color: theme.textColor)),
+              const SizedBox(height: 20,),
+              TextButton(
+                onPressed: () {
+                  _checkout.onPayCancel(_context);
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor:  _checkout.theme.primaryColor
+                ),
+                child: Text(l10n.cancelPayment, style: TextStyle(color: _checkout.theme.primaryColor),),
+              )
+            ],
+          ),
+        ),
+      );
+    },).whenComplete(() => _checkout.isShowLoader = false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -346,6 +403,12 @@ class _DigitEasyPayPaymentBuilderState extends State<_DigitEasyPayPaymentBuilder
               );
             }
 
+            if(paymentProvider.isLoading){
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                onPayLoading(paymentProvider.isLoading);
+              });
+            }
+
             return Container(
               padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
@@ -388,3 +451,4 @@ class _DigitEasyPayPaymentBuilderState extends State<_DigitEasyPayPaymentBuilder
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }
+// 15512

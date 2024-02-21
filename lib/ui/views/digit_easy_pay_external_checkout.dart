@@ -135,7 +135,7 @@ class DigitEasyPayExternalCheckout{
 }
 
 class _PaymentsBuilder extends StatelessWidget {
-  _PaymentsBuilder({Key? key, required this.checkout}) : super(key: key);
+  const _PaymentsBuilder({Key? key, required this.checkout}) : super(key: key);
   final DigitEasyPayExternalCheckout checkout;
 
   bool hasSource(DigitEasyPayPaymentSource source){

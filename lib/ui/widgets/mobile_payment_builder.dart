@@ -46,6 +46,7 @@ class _DigitEasyPayMobilePaymentBuilderState extends State<DigitEasyPayMobilePay
       key: _formKey,
       child: Column(
         children: [
+
           const SizedBox(
             height: 15,
           ),
@@ -165,6 +166,11 @@ class _DigitEasyPayMobilePaymentBuilderState extends State<DigitEasyPayMobilePay
   }
 
   void processPayment(BuildContext context){
+    // FocusScope.of(context).unfocus();
+    // MobilePayRequest mobilePayRequest = MobilePayRequest(phoneNumber: "dskjhkshkfjds", amount: widget.checkout.amount, firstName: _firstnameController.text.trim(), lastName: _lastnameController.text.trim(), email: _emailController.text.trim());
+    // widget.onProcessPayment?.call(mobilePayRequest);
+    //
+
     if(!_formKey.currentState!.validate()){
       return;
     }
