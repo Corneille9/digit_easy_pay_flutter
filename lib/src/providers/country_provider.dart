@@ -35,6 +35,8 @@ class CountryProvider extends ChangeNotifier {
       notifyListeners();
 
       if (error is DioException) {
+        debugPrint(error.response?.data.toString());
+        debugPrintStack(stackTrace: stackTrace);
         DigitEasyPayException.interpretError(error);
       }
 

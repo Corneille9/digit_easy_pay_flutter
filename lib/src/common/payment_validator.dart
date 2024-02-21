@@ -14,7 +14,8 @@ abstract class PaymentUtils{
   }
 
   static String reformatPhone(String value){
-    if(value.startsWith("+"))return value.substring(1);
+    if(value.startsWith("+"))value = value.substring(1);
+    if(!value.startsWith("229")) value = "229$value";
     return value;
   }
 

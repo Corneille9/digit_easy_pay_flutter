@@ -9,6 +9,7 @@ import 'package:digit_easy_pay_flutter/src/providers/paypal_payment_provider.dar
 import 'package:digit_easy_pay_flutter/src/providers/stripe_payment_provider.dart';
 import 'package:digit_easy_pay_flutter/ui/widgets/flexible_bottom_sheet_route.dart';
 import 'package:digit_easy_pay_flutter/ui/widgets/payment_source_builder.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,10 @@ class DigitEasyPayExternalCheckout{
   }
   
   void init(){
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: theme.backgroundColor
+    ));
+
     showFlexibleBottomSheet(
       // maxHeaderHeight: 180,
       // minHeaderHeight: 180,

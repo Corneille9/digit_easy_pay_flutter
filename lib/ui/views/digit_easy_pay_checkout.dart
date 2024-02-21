@@ -11,6 +11,7 @@ import 'package:digit_easy_pay_flutter/ui/widgets/flexible_bottom_sheet_route.da
 import 'package:digit_easy_pay_flutter/ui/widgets/mobile_payment_builder.dart';
 import 'package:digit_easy_pay_flutter/ui/widgets/payment_methods_builder.dart';
 import 'package:digit_easy_pay_flutter/ui/widgets/visa_payment_builder.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
@@ -35,6 +36,10 @@ class DigitEasyPayCheckout{
   }
   
   void init(){
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: theme.backgroundColor
+    ));
+
     showStickyFlexibleBottomSheet(
       maxHeaderHeight: 180,
       minHeaderHeight: 180,
