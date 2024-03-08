@@ -40,77 +40,93 @@ class DigitEasyPayExternalCheckout{
         systemNavigationBarColor: theme.backgroundColor
     ));
 
-    showFlexibleBottomSheet(
-      // maxHeaderHeight: 180,
-      // minHeaderHeight: 180,
-      minHeight: 0.8,
-      initHeight: 0.9,
-      maxHeight: 1,
-      isDismissible: false,
-      isCollapsible: false,
-      // l10n: l10n,
-      isSafeArea: true,
-      bottomSheetBorderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(20),
-        topRight: Radius.circular(20)
-      ),
+    showModalBottomSheet(
       context: context,
-      bottomSheetColor: theme.backgroundColor,
-      onWillPop: () async{
-        return canPop;
-      },
-      providers: [
-        if(_hasSource(DigitEasyPayPaymentSource.QOSIC))ChangeNotifierProvider(create: (context) => DigitEasyPayPaymentProvider(
-          amount: amount,
-          currency: currency,
-          config: config.digitEasyPayConfig!,
-          theme: theme,
-          l10n: l10n,
-          onError: onPayError,
-            onSuccess: onPaySuccess,
-            onCancel: onPayCancel
-        )),
-
-        if(_hasSource(DigitEasyPayPaymentSource.STRIPE))ChangeNotifierProvider(create: (context) => StripePaymentProvider(
-            amount: amount,
-            currency: currency,
-            config: config.stripeConfig!,
-            theme: theme,
-          onError: onPayError,
-            onSuccess: onPaySuccess,
-            onCancel: onPayCancel
-        )),
-
-        if(_hasSource(DigitEasyPayPaymentSource.PAYPAL))ChangeNotifierProvider(create: (context) => PaypalPaymentProvider(
-            amount: amount,
-            currency: currency,
-            config: config.payPalConfig!,
-          onError: onPayError,
-            onSuccess: onPaySuccess,
-            onCancel: onPayCancel
-        )),
-
-        if(_hasSource(DigitEasyPayPaymentSource.FEDAPAY))ChangeNotifierProvider(create: (context) => FedapayPaymentProvider(
-            amount: amount,
-            currency: currency,
-            config: config.fedapayConfig!,
-            theme: theme,
-            l10n: l10n,
-            onError: onPayError,
-          onSuccess: onPaySuccess,
-          onCancel: onPayCancel
-        )),
-      ],
-      anchors: [.8, 1],
-      builder: (context, scrollController, bottomSheetOffset) {
+      isScrollControlled: true,
+      isDismissible: false,
+      useRootNavigator: true,
+      showDragHandle: false,
+      enableDrag: false,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.9,
+      ),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          )
+      ),
+      builder: (context) {
         _context = context;
-        return Container(
-          height: double.infinity,
-          width: double.infinity,
-          color: theme.backgroundSubtleColor,
-          child: SingleChildScrollView(
-            controller: scrollController,
-            child: _PaymentsBuilder(checkout: this),
+        return ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+          child: PopScope(
+            canPop: false,
+            child: MultiProvider(
+              providers: [
+                if(_hasSource(DigitEasyPayPaymentSource.QOSIC))ChangeNotifierProvider(create: (context) => DigitEasyPayPaymentProvider(
+                    amount: amount,
+                    currency: currency,
+                    config: config.digitEasyPayConfig!,
+                    theme: theme,
+                    l10n: l10n,
+                    onError: onPayError,
+                    onSuccess: onPaySuccess,
+                    onCancel: onPayCancel
+                )),
+
+                if(_hasSource(DigitEasyPayPaymentSource.STRIPE))ChangeNotifierProvider(create: (context) => StripePaymentProvider(
+                    amount: amount,
+                    currency: currency,
+                    config: config.stripeConfig!,
+                    theme: theme,
+                    onError: onPayError,
+                    onSuccess: onPaySuccess,
+                    onCancel: onPayCancel
+                )),
+
+                if(_hasSource(DigitEasyPayPaymentSource.PAYPAL))ChangeNotifierProvider(create: (context) => PaypalPaymentProvider(
+                    amount: amount,
+                    currency: currency,
+                    config: config.payPalConfig!,
+                    onError: onPayError,
+                    onSuccess: onPaySuccess,
+                    onCancel: onPayCancel
+                )),
+
+                if(_hasSource(DigitEasyPayPaymentSource.FEDAPAY))ChangeNotifierProvider(create: (context) => FedapayPaymentProvider(
+                    amount: amount,
+                    currency: currency,
+                    config: config.fedapayConfig!,
+                    theme: theme,
+                    l10n: l10n,
+                    onError: onPayError,
+                    onSuccess: onPaySuccess,
+                    onCancel: onPayCancel
+                )),
+              ],
+              child: Theme(
+                // title: 'MBC Wallet',
+                // debugShowCheckedModeBanner: false,
+                data: ThemeData(
+                  colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
+                  useMaterial3: false,
+                ),
+                child: Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  color: theme.backgroundSubtleColor,
+                  child: SingleChildScrollView(
+                    // controller: scrollController,
+                    child: _PaymentsBuilder(checkout: this),
+                  ),
+                ),
+                // home: home,
+              ),
+            ),
           ),
         );
       },
@@ -180,7 +196,7 @@ class _PaymentsBuilder extends StatelessWidget {
                         child: Icon(
                           Icons.close,
                           size: 15,
-                          color: checkout.theme.textColor.withOpacity(0.3),
+                          color: checkout.theme.textColor.withOpacity(0.8),
                         ),
                       ),
                     ),
