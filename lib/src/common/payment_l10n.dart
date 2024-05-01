@@ -156,7 +156,7 @@ class L10nFr extends L10n {
     String yes = "Oui",
     String no = "Non",
     String paymentSuccessfully = "Le paiement a été effectué avec succès",
-    String paymentWaitingValidation = "Votre paiement est en attente de validation. Merci de votre patience.",
+    String paymentWaitingValidation = "Votre paiement est en attente de validation. Veuillez patienter.",
     String paymentFailed = "Le paiement a échoué. Veuillez réessayer ou contacter le support",
     String cancelPayment = "Annuler le paiement",
     String wantToCancel = "Êtes-vous sûr de vouloir annuler le paiement ?",

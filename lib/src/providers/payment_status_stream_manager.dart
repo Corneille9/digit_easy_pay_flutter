@@ -32,7 +32,7 @@ class PaymentStatusStreamManager {
   /// Start the transaction status stream with the specified stream interval.
   void _startStream(int streamInterval) {
     _timer = Timer.periodic(Duration(seconds: streamInterval), (timer) async {
-      if (_timer.tick >= 40) {
+      if (_timer.tick >= 200) {
         dispose();
         onTimeOut?.call();
         return;

@@ -11,7 +11,7 @@ import 'package:flutter_paypal_native/flutter_paypal_native.dart';
 
 class PaypalPaymentProvider extends ChangeNotifier{
   final FlutterPaypalNative _flutterPaypalPlugin = FlutterPaypalNative.instance;
-  final FPayPalCurrencyCode currencyCode = FPayPalCurrencyCode.usd;
+  final FPayPalCurrencyCode currencyCode = FPayPalCurrencyCode.eur;
 
   final PayPalConfig config;
   final num amount;
@@ -55,7 +55,7 @@ class PaypalPaymentProvider extends ChangeNotifier{
         },
         onSuccess: (data) {
           _flutterPaypalPlugin.removeAllPurchaseItems();
-          onSuccess?.call(referenceId, DigitEasyPayPaymentSource.PAYPAL, "visa_card");
+          onSuccess?.call(data.orderId ?? referenceId, DigitEasyPayPaymentSource.PAYPAL, "visa_card");
           debugPrint("Paypal payment success");
         },
         onError: (data) {

@@ -59,10 +59,13 @@ abstract class PaymentUtils{
     try {
       var headers = {"apikey": "MBbe7yvGcCUN5auslcmeLeWao1R4l6Wa",};
       var queryParameters = {"from": from, "to": to, "amount": amount,};
-      var response = await httpClient.get("https://api.apilayer.com/currency_data/convert", queryParameters: queryParameters, options: Options(headers: headers),);
+      var response = await httpClient.get("https://api.apilayer.com/currency_data/convert", queryParameters: queryParameters, options: Options(headers: headers, sendTimeout: const Duration(seconds: 10), receiveTimeout: const Duration(seconds: 10)),);
       debugPrint("AppUtils - convertAmount - amount: $amount, from: $from, to: $to, response: ${response.data}");
       if(response.data["success"]==true) {
         return response.data["result"];
+      }
+      if(to == "EUR" && from == "XOF") {
+        return amount / 656;
       }
       return null;
     } catch (e, _) {
@@ -72,6 +75,9 @@ abstract class PaymentUtils{
         debugPrint(e.response?.data.toString());
         debugPrint("AppUtils - convertAmount - error 429, retrying with ninja api");
         return await convertAmountWithNinjaApi(amount);
+      }
+      if(to == "EUR" && from == "XOF") {
+        return amount / 656;
       }
       return null;
     }
@@ -83,10 +89,13 @@ abstract class PaymentUtils{
     try {
       var headers = {"X-Api-Key": "GXwfO3iwWn6vsSB6gebzaA==fdrdSy2yJiQKvZWg",};
       var queryParameters = {"have": from, "want": to, "amount": amount,};
-      var response = await httpClient.get("https://api.api-ninjas.com/v1/convertcurrency", queryParameters: queryParameters, options: Options(headers: headers),);
+      var response = await httpClient.get("https://api.api-ninjas.com/v1/convertcurrency", queryParameters: queryParameters, options: Options(headers: headers, sendTimeout: const Duration(seconds: 10), receiveTimeout: const Duration(seconds: 10)),);
       debugPrint("AppUtils - convertAmount - amount: $amount, from: $from, to: $to, response: ${response.data}");
       if(response.statusCode==200) {
         return response.data["new_amount"];
+      }
+      if(to == "EUR" && from == "XOF") {
+        return amount / 656;
       }
       return null;
     } catch (e, _) {
@@ -94,6 +103,9 @@ abstract class PaymentUtils{
       debugPrintStack(stackTrace: _);
       if (e is DioException) {
         debugPrint(e.response?.data.toString());
+      }
+      if(to == "EUR" && from == "XOF") {
+        return amount / 656;
       }
       return null;
     }
