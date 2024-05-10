@@ -1,3 +1,4 @@
+import 'package:digit_currency_converter/digit_currency_converter.dart';
 import 'package:digit_easy_pay_flutter/src/common/exceptions.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_constants.dart';
 import 'package:dio/dio.dart';
@@ -20,7 +21,7 @@ abstract class PaymentUtils{
   }
 
   static String formatAmount(num amount, DigitEasyPayCurrency currency){
-    return "$amount ${currency.name}";
+    return "${amount.toStringAsFixed(2)} ${currency.name}";
   }
 
   static bool validateCharge({required DigitEasyPayPaymentMethod method}){
@@ -53,59 +54,17 @@ abstract class PaymentUtils{
     }
   }
 
-  static Future<num?> convertAmount(num amount, {String from = "XOF", String to = "USD"}) async {
+  static Future<num?> convertAmount(num amount, Credentials converterCredentials, {String from = "XOF", String to = "EUR"}) async {
     if (to == from) return amount;
-    final Dio httpClient = Dio();
     try {
-      var headers = {"apikey": "MBbe7yvGcCUN5auslcmeLeWao1R4l6Wa",};
-      var queryParameters = {"from": from, "to": to, "amount": amount,};
-      var response = await httpClient.get("https://api.apilayer.com/currency_data/convert", queryParameters: queryParameters, options: Options(headers: headers, sendTimeout: const Duration(seconds: 10), receiveTimeout: const Duration(seconds: 10)),);
-      debugPrint("AppUtils - convertAmount - amount: $amount, from: $from, to: $to, response: ${response.data}");
-      if(response.data["success"]==true) {
-        return response.data["result"];
-      }
-      if(to == "EUR" && from == "XOF") {
-        return amount / 656;
-      }
-      return null;
+      var converter = DigitCurrencyConverter(credentials: converterCredentials);
+      return await converter.convert(from: from.asCurrency, to: to.asCurrency, amount: amount.toDouble(), withoutRounding: true);
     } catch (e, _) {
       debugPrint(e.toString());
       debugPrintStack(stackTrace: _);
       if (e is DioException) {
         debugPrint(e.response?.data.toString());
         debugPrint("AppUtils - convertAmount - error 429, retrying with ninja api");
-        return await convertAmountWithNinjaApi(amount);
-      }
-      if(to == "EUR" && from == "XOF") {
-        return amount / 656;
-      }
-      return null;
-    }
-  }
-
-  static Future<num?> convertAmountWithNinjaApi(num amount, {String from = "XOF", String to = "USD"}) async {
-    if (to == from) return amount;
-    final Dio httpClient = Dio();
-    try {
-      var headers = {"X-Api-Key": "GXwfO3iwWn6vsSB6gebzaA==fdrdSy2yJiQKvZWg",};
-      var queryParameters = {"have": from, "want": to, "amount": amount,};
-      var response = await httpClient.get("https://api.api-ninjas.com/v1/convertcurrency", queryParameters: queryParameters, options: Options(headers: headers, sendTimeout: const Duration(seconds: 10), receiveTimeout: const Duration(seconds: 10)),);
-      debugPrint("AppUtils - convertAmount - amount: $amount, from: $from, to: $to, response: ${response.data}");
-      if(response.statusCode==200) {
-        return response.data["new_amount"];
-      }
-      if(to == "EUR" && from == "XOF") {
-        return amount / 656;
-      }
-      return null;
-    } catch (e, _) {
-      debugPrint(e.toString());
-      debugPrintStack(stackTrace: _);
-      if (e is DioException) {
-        debugPrint(e.response?.data.toString());
-      }
-      if(to == "EUR" && from == "XOF") {
-        return amount / 656;
       }
       return null;
     }

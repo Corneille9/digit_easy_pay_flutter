@@ -7,7 +7,6 @@ import 'package:digit_easy_pay_flutter/src/providers/digit_easy_pay_payment_prov
 import 'package:digit_easy_pay_flutter/src/providers/fedapay_provider.dart';
 import 'package:digit_easy_pay_flutter/src/providers/paypal_payment_provider.dart';
 import 'package:digit_easy_pay_flutter/src/providers/stripe_payment_provider.dart';
-import 'package:digit_easy_pay_flutter/ui/widgets/flexible_bottom_sheet_route.dart';
 import 'package:digit_easy_pay_flutter/ui/widgets/payment_source_builder.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -79,6 +78,7 @@ class DigitEasyPayExternalCheckout{
                 )),
 
                 if(_hasSource(DigitEasyPayPaymentSource.STRIPE))ChangeNotifierProvider(create: (context) => StripePaymentProvider(
+                    converterCredentials: config.converterCredentials,
                     amount: amount,
                     currency: currency,
                     config: config.stripeConfig!,
@@ -89,6 +89,7 @@ class DigitEasyPayExternalCheckout{
                 )),
 
                 if(_hasSource(DigitEasyPayPaymentSource.PAYPAL))ChangeNotifierProvider(create: (context) => PaypalPaymentProvider(
+                  converterCredentials: config.converterCredentials,
                     amount: amount,
                     currency: currency,
                     config: config.payPalConfig!,
@@ -220,7 +221,7 @@ class _PaymentsBuilder extends StatelessWidget {
               spacing: 30,
               runSpacing: 30,
               children: [
-                if(hasSource(DigitEasyPayPaymentSource.QOSIC))
+                if(hasSource(DigitEasyPayPaymentSource.QOSIC) && checkout.currency==DigitEasyPayCurrency.XOF)
                 PaymentSourceBuilder(
                   theme: checkout.theme,
                   padding: const EdgeInsets.all(0),
@@ -232,13 +233,13 @@ class _PaymentsBuilder extends StatelessWidget {
                 if(hasSource(DigitEasyPayPaymentSource.PAYPAL))
                   PaymentSourceBuilder(
                     theme: checkout.theme,
-                  padding: const EdgeInsets.all(25),
-                  imagePath: PaymentImages.paypal,
-                  onTap: () {
-                    if(checkout.isInitializing.value)return;
-                    checkout.isInitializing.value = true;
-                    Provider.of<PaypalPaymentProvider>(context, listen: false).makePayment(onInitialized: onInitialized);
-                  },),
+                    padding: const EdgeInsets.all(25),
+                    imagePath: PaymentImages.paypal,
+                    onTap: () {
+                      if(checkout.isInitializing.value)return;
+                      checkout.isInitializing.value = true;
+                      Provider.of<PaypalPaymentProvider>(context, listen: false).makePayment(onInitialized: onInitialized);
+                    },),
                 if(hasSource(DigitEasyPayPaymentSource.STRIPE))
                   PaymentSourceBuilder(
                     theme: checkout.theme,

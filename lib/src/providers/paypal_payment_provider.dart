@@ -11,7 +11,8 @@ import 'package:flutter_paypal_native/flutter_paypal_native.dart';
 
 class PaypalPaymentProvider extends ChangeNotifier{
   final FlutterPaypalNative _flutterPaypalPlugin = FlutterPaypalNative.instance;
-  final FPayPalCurrencyCode currencyCode = FPayPalCurrencyCode.eur;
+  final FPayPalCurrencyCode baseCurrency = FPayPalCurrencyCode.eur;
+  final Credentials converterCredentials;
 
   final PayPalConfig config;
   final num amount;
@@ -26,6 +27,7 @@ class PaypalPaymentProvider extends ChangeNotifier{
     required this.config,
     required this.amount,
     required this.currency,
+    required this.converterCredentials,
     this.onSuccess,
     this.onCancel,
     this.onError,
@@ -41,7 +43,7 @@ class PaypalPaymentProvider extends ChangeNotifier{
       //sandbox, staging, live etc
       payPalEnvironment: config.environment.isLive?FPayPalEnvironment.live:FPayPalEnvironment.sandbox,
       //what currency do you plan to use? default is US dollars
-      currencyCode: currencyCode,
+      currencyCode: baseCurrency,
       //action paynow?
       action: FPayPalUserAction.payNow,
     );
@@ -71,15 +73,15 @@ class PaypalPaymentProvider extends ChangeNotifier{
     try{
       debugPrint("PaypalInternational - Convert amount...");
 
-      if(!FPayPalCurrencyCode.values.map((e) => e.name.toLowerCase()).contains(currency.name.toLowerCase())) {
-        convertedAmount ??= await PaymentUtils.convertAmount(amount,
-            from: currency.name.toUpperCase(),
-            to: currencyCode.name.toUpperCase(),
+      if(currency.name.toLowerCase() != baseCurrency.name.toLowerCase()){
+        convertedAmount = await PaymentUtils.convertAmount(amount, converterCredentials,
+          from: currency.name.toUpperCase(),
+          to: baseCurrency.name.toUpperCase(),
         );
       }else{
         convertedAmount = amount;
       }
-
+      
       if(convertedAmount == null){
         onError?.call();
         return;
@@ -96,7 +98,7 @@ class PaypalPaymentProvider extends ChangeNotifier{
           amount: convertedAmount!.toDouble(),
           ///please use your own algorithm for referenceId. Maybe ProductID?
           referenceId: referenceId,
-          currencyCode: currencyCode,
+          currencyCode: baseCurrency,
         ),
       );
 

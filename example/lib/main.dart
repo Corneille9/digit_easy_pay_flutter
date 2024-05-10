@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:digit_easy_pay_flutter/digit_easy_pay_flutter.dart';
 
@@ -64,7 +66,11 @@ class _MyHomePageState extends State<MyHomePage> {
     //
     // digitEasyPay.checkout(context, amount: 500, currency: DigitEasyPayCurrency.XOF);
 
-    var digitPay =  DigitEasyPayEasyPayWithExternal(const PaymentConfig(
+    var digitPay =  DigitEasyPayEasyPayWithExternal( PaymentConfig(
+      converterCredentials: Credentials(
+        password: "password",
+        username: "username",
+      ),
         digitEasyPayConfig: DigitEasyPayConfig(
           environment: DigitEasyPayEnvironment.sandbox, // Use "live" for production mode
           userKey: 'userKey',

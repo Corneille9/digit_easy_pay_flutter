@@ -1,3 +1,4 @@
+import 'package:digit_currency_converter/digit_currency_converter.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_constants.dart';
 
 /// [DigitEasyPayConfig] Class
@@ -314,6 +315,7 @@ class FedapayConfig{
 }
 
 class PaymentConfig{
+  final Credentials converterCredentials;
   final DigitEasyPayConfig? digitEasyPayConfig;
   final PayPalConfig? payPalConfig;
   final StripeConfig? stripeConfig;
@@ -321,6 +323,7 @@ class PaymentConfig{
 
 //<editor-fold desc="Data Methods">
   const PaymentConfig({
+    required this.converterCredentials,
     this.digitEasyPayConfig,
     this.payPalConfig,
     this.stripeConfig,
@@ -332,6 +335,7 @@ class PaymentConfig{
       identical(this, other) ||
       (other is PaymentConfig &&
           runtimeType == other.runtimeType &&
+          converterCredentials == other.converterCredentials &&
           digitEasyPayConfig == other.digitEasyPayConfig &&
           payPalConfig == other.payPalConfig &&
           stripeConfig == other.stripeConfig &&
@@ -347,6 +351,7 @@ class PaymentConfig{
   @override
   String toString() {
     return 'PaymentConfig{' +
+        ' converterCredentials: $converterCredentials,' +
         ' digitEasyPayConfig: $digitEasyPayConfig,' +
         ' payPalConfig: $payPalConfig,' +
         ' stripeConfig: $stripeConfig,' +
@@ -355,12 +360,14 @@ class PaymentConfig{
   }
 
   PaymentConfig copyWith({
+    Credentials? converterCredentials,
     DigitEasyPayConfig? digitEasyPayConfig,
     PayPalConfig? payPalConfig,
     StripeConfig? stripeConfig,
     FedapayConfig? fedapayConfig,
   }) {
     return PaymentConfig(
+      converterCredentials: converterCredentials ?? this.converterCredentials,
       digitEasyPayConfig: digitEasyPayConfig ?? this.digitEasyPayConfig,
       payPalConfig: payPalConfig ?? this.payPalConfig,
       stripeConfig: stripeConfig ?? this.stripeConfig,
@@ -370,6 +377,7 @@ class PaymentConfig{
 
   Map<String, dynamic> toMap() {
     return {
+      'converterCredentials': this.converterCredentials,
       'digitEasyPayConfig': this.digitEasyPayConfig,
       'payPalConfig': this.payPalConfig,
       'stripeConfig': this.stripeConfig,
@@ -379,6 +387,7 @@ class PaymentConfig{
 
   factory PaymentConfig.fromMap(Map<String, dynamic> map) {
     return PaymentConfig(
+      converterCredentials: map['converterCredentials'] as Credentials,
       digitEasyPayConfig: map['digitEasyPayConfig'] as DigitEasyPayConfig,
       payPalConfig: map['payPalConfig'] as PayPalConfig,
       stripeConfig: map['stripeConfig'] as StripeConfig,

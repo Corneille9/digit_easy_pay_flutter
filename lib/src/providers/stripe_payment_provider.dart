@@ -3,27 +3,37 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 
+import '../common/payment_validator.dart';
+
 class StripePaymentProvider extends ChangeNotifier{
   final StripeConfig config;
+  final Credentials converterCredentials;
   final num amount;
+  DigitEasyPayCurrency baseCurrency = DigitEasyPayCurrency.EUR;
   final DigitEasyPayCurrency currency;
   final DigitEasyPayCallback? onSuccess;
   final VoidCallback? onCancel;
   final VoidCallback? onError;
   final PaymentTheme theme;
+  num? convertedAmount;
 
   StripePaymentProvider({
     required this.config,
+    required this.converterCredentials,
     required this.amount,
     required this.currency,
     required this.theme,
     this.onSuccess,
     this.onCancel,
     this.onError,
-  });
+  }){
+    if([DigitEasyPayCurrency.XOF, DigitEasyPayCurrency.USD, DigitEasyPayCurrency.EUR].contains(currency)){
+      baseCurrency = currency;
+    }
+  }
 
   Future<String?> _initStripe() async {
-    Map<String, dynamic>? paymentIntent = await createPaymentIntent(amount, currency.name);
+    Map<String, dynamic>? paymentIntent = await createPaymentIntent(amount);
     if(paymentIntent == null){
       onError?.call();
       return null;
@@ -74,11 +84,32 @@ class StripePaymentProvider extends ChangeNotifier{
     },);
   }
 
-  Future<Map<String, dynamic>?> createPaymentIntent(num amount, String currency) async {
+  Future<Map<String, dynamic>?> createPaymentIntent(num amount) async {
     try {
+
+      if(currency.name.toLowerCase() != baseCurrency.name.toLowerCase()){
+        convertedAmount = await PaymentUtils.convertAmount(amount, converterCredentials,
+          from: currency.name.toUpperCase(),
+          to: baseCurrency.name.toUpperCase(),
+        );
+      }else{
+        convertedAmount = amount;
+      }
+
+      if(convertedAmount == null){
+        onError?.call();
+        return null;
+      }
+
+      if(baseCurrency == DigitEasyPayCurrency.XOF){
+        convertedAmount = convertedAmount!.round();
+      }else{
+        convertedAmount = (convertedAmount! * 100).round();
+      }
+
       Map<String, dynamic> body = {
-        'amount': amount.round(),
-        'currency': currency,
+        'amount': convertedAmount,
+        'currency': baseCurrency.name,
         // 'payment_method_types[]': 'card'
       };
       var headers = {
