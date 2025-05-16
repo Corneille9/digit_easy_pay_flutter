@@ -1,9 +1,51 @@
-import 'dart:html';
-
-import 'package:flutter/material.dart';
 import 'package:digit_easy_pay_flutter/digit_easy_pay_flutter.dart';
+import 'package:flutter/material.dart';
 
 void main() {
+  // Initialize the payment library with configuration
+  DigitEasyPayFlutter.setConfig(
+    PaymentConfig(
+      // Currency converter credentials for automatic currency conversion
+      currencyConverterCredentials: Credentials(username: 'your_converter_username', password: 'your_converter_password'),
+
+      // Configure payment gateways
+      gatewayConfig: PaymentGatewayConfig(
+        stripeConfig: StripeConfig(
+          stripePrivateKey: 'your_stripe_private_key',
+          stripePublishableKey: 'your_stripe_publishable_key',
+          merchantCountryCode: 'US',
+          merchantDisplayName: 'Digit Easy Pay Demo',
+        ),
+
+        payPalConfig: PayPalConfig(
+          clientId: 'your_paypal_client_id',
+          clientSecret: 'your_paypal_client_secret',
+          sandbox: true, // Use sandbox for testing
+        ),
+
+        fedapayConfig: FedapayConfig(
+          apiKey: 'your_fedapay_api_key',
+          sandbox: true, // Use sandbox for testing
+        ),
+
+        qosicConfig: QosicConfig(
+          userKey: 'your_qosic_user_key',
+          username: 'your_qosic_username',
+          password: 'your_qosic_password',
+          paymentMethods: [QosicPaymentGateway.momo, QosicPaymentGateway.flooz, QosicPaymentGateway.visa],
+          sandbox: true, // Use sandbox for testing
+        ),
+      ),
+
+      // Optionally specify which gateways to enable (defaults to all)
+      // gateways: [PaymentGateway.STRIPE, PaymentGateway.PAYPAL],
+
+      // Set theme and language
+      theme: DefaultPaymentTheme(),
+      lang: L10nEn(),
+    ),
+  );
+
   runApp(const MyApp());
 }
 
@@ -14,27 +56,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      title: 'Digit Easy Pay Demo',
+      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple), useMaterial3: true),
+      home: const MyHomePage(title: 'Digit Easy Pay Demo Home Page'),
     );
   }
 }
@@ -49,85 +73,90 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool _isProcessing = false;
+  String? _paymentResult;
 
+  Future<void> _processPayment() async {
+    // Prevent multiple payment attempts
+    if (_isProcessing) return;
 
-  void _incrementCounter() {
-    // const config = DigitEasyPayConfig(
-    //   environment: DigitEasyPayEnvironment.sandbox, // Use "live" for production mode
-    //   userKey: 'your_user_key',
-    //   username: 'your_username',
-    //   password: 'your_password',
-    // );
+    setState(() {
+      _isProcessing = true;
+      _paymentResult = null;
+    });
 
-    // var digitEasyPay = DigitEasyPay(config);
-    //
-    // // Initialize the service
-    // digitEasyPay.initialize();
-    //
-    // digitEasyPay.checkout(context, amount: 500, currency: DigitEasyPayCurrency.XOF);
+    try {
+      // Create payment request
+      final paymentRequest = PaymentRequest(
+        amount: 100.0, // Amount to charge
+        currency: Currency.USD, // Currency
+      );
 
-    var digitPay =  DigitEasyPayEasyPayWithExternal( PaymentConfig(
-      converterCredentials: Credentials(
-        password: "password",
-        username: "username",
-      ),
-        digitEasyPayConfig: DigitEasyPayConfig(
-          environment: DigitEasyPayEnvironment.sandbox, // Use "live" for production mode
-          userKey: 'userKey',
-          username: 'username',
-          password: 'password',
-        ),
-        fedapayConfig: FedapayConfig(
-          apiKey: "apiKey",
-          environment: DigitEasyPayEnvironment.sandbox
-        ),
-        payPalConfig: PayPalConfig(
-          payPalClientID: "palPalClientID",
-          payPalReturnUrl: "com.example.example://paypalpay",
-          environment: DigitEasyPayEnvironment.sandbox
-        ),
-        stripeConfig: StripeConfig(
-            stripePrivateKey: "stripePrivateKey",
-            stripePublishableKey: "stripePublishKey",
-            merchantCountryCode: "BJ",
-            merchantDisplayName: "Merchant name",
-          environment: DigitEasyPayEnvironment.sandbox
-        ),
-      ));
+      // Process the payment
+      final response = await DigitEasyPayFlutter.checkout(context: context, paymentRequest: paymentRequest);
 
-    digitPay.initialize(paymentSources: [DigitEasyPayPaymentSource.STRIPE, DigitEasyPayPaymentSource.PAYPAL, DigitEasyPayPaymentSource.FEDAPAY, DigitEasyPayPaymentSource.QOSIC]);
-
-    digitPay.checkout(context,
-        amount: 200,
-        currency: DigitEasyPayCurrency.XOF,
-        theme: DefaultPaymentTheme(),
-        l10n: const L10nFr(),
-    );
+      // Handle the response
+      if (response != null) {
+        setState(() {
+          _paymentResult =
+              'Payment successful!\nReference: ${response.reference}\n'
+              'Gateway: ${response.gateway}\n'
+              'Method: ${response.gatewayMethod ?? "N/A"}';
+        });
+      } else {
+        setState(() {
+          _paymentResult = 'Payment was cancelled or failed';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _paymentResult = 'Error: $e';
+      });
+    } finally {
+      setState(() {
+        _isProcessing = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(backgroundColor: Theme.of(context).colorScheme.inversePrimary, title: Text(widget.title)),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(
-                onPressed: _incrementCounter,
-                child: const Text("Checkout")
-            )
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              // Payment amount display
+              const Text('Demo Payment', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              const Text('Amount: \$100.00', style: TextStyle(fontSize: 18)),
+              const SizedBox(height: 30),
+
+              // Checkout button
+              ElevatedButton(
+                onPressed: _isProcessing ? null : _processPayment,
+                style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15)),
+                child: _isProcessing ? const CircularProgressIndicator() : const Text("Checkout", style: TextStyle(fontSize: 16)),
+              ),
+
+              // Result display
+              if (_paymentResult != null) ...[
+                const SizedBox(height: 30),
+                Container(
+                  padding: const EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: _paymentResult!.contains('successful') ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: _paymentResult!.contains('successful') ? Colors.green : Colors.red),
+                  ),
+                  child: Text(_paymentResult!, style: TextStyle(color: _paymentResult!.contains('successful') ? Colors.green.shade800 : Colors.red.shade800)),
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );

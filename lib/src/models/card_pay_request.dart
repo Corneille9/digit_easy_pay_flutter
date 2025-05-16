@@ -1,23 +1,23 @@
-
+import 'package:digit_easy_pay_flutter/src/common/form_request.dart';
 import 'package:digit_easy_pay_flutter/src/models/country.dart';
 import 'package:digit_easy_pay_flutter/src/common/payment_constants.dart';
 
-class CardPayRequest{
+class CardPayRequest extends FormRequest{
   final String phoneNumber;
   final num totalAmount;
   final String firstName;
   final String lastName;
-  final String middleName;
-  final DigitEasyPayCurrency currency;
+  final String? middleName;
+  final Currency currency;
   final String title;
   final String city;
   final String address2;
   final String town;
-  final String department;
-  final String buildingNumber;
+  final String? department;
+  final String? buildingNumber;
   final String email;
-  final String postalCode;
-  final String emailDomain;
+  final String? postalCode;
+  final String? emailDomain;
   final Country country;
   final String iso2Code;
 
@@ -41,7 +41,6 @@ class CardPayRequest{
     this.iso2Code = "",
   });
 
-
   @override
   String toString() {
     return 'CardPayRequest{phoneNumber: $phoneNumber, totalAmount: $totalAmount, firstName: $firstName, lastName: $lastName, middleName: $middleName, currency: $currency, title: $title, city: $city, address2: $address2, town: $town, department: $department, buildingNumber: $buildingNumber, email: $email, postalCode: $postalCode, emailDomain: $emailDomain, country: $country, iso2Code: $iso2Code}';
@@ -53,7 +52,7 @@ class CardPayRequest{
     String? firstName,
     String? lastName,
     String? middleName,
-    DigitEasyPayCurrency? currency,
+    Currency? currency,
     String? title,
     String? city,
     String? address2,
@@ -118,7 +117,7 @@ class CardPayRequest{
       firstName: map['firstName'] as String,
       lastName: map['lastName'] as String,
       middleName: map['middleName'] as String,
-      currency: map['currency'] as DigitEasyPayCurrency,
+      currency: map['currency'] as Currency,
       title: map['title'] as String,
       city: map['city'] as String,
       address2: map['address2'] as String,

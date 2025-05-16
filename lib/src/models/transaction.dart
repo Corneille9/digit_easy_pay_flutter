@@ -1,11 +1,11 @@
-class Transaction{
+class Transaction {
   final String id;
   final double amount;
   final String paymentMethod;
   final String reference;
   final String transactionType;
 
-//<editor-fold desc="Data Methods">
+  //<editor-fold desc="Data Methods">
 
   const Transaction({
     required this.id,
@@ -68,12 +68,12 @@ class Transaction{
   factory Transaction.fromMap(Map<String, dynamic> map) {
     return Transaction(
       id: map['id'] as String,
-      amount: map['amount']??0,
-      paymentMethod: map['paymentMethod']??'',
-      reference: map['reference']??'',
-      transactionType: map['transactionType']??'',
+      amount: map['amount'] ?? 0,
+      paymentMethod: map['paymentMethod'] ?? '',
+      reference: map['reference'] ?? '',
+      transactionType: map['transactionType'] ?? '',
     );
   }
 
-//</editor-fold>
+  //</editor-fold>
 }

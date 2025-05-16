@@ -4,14 +4,9 @@ class Country {
   final String code;
   final String dialCode;
 
-//<editor-fold desc="Data Methods">
+  //<editor-fold desc="Data Methods">
 
-  const Country({
-    required this.id,
-    required this.name,
-    required this.code,
-    required this.dialCode,
-  });
+  const Country({required this.id, required this.name, required this.code, required this.dialCode});
 
   @override
   bool operator ==(Object other) =>
@@ -24,20 +19,14 @@ class Country {
           dialCode == other.dialCode);
 
   @override
-  int get hashCode =>
-      id.hashCode ^ name.hashCode ^ code.hashCode ^ dialCode.hashCode;
+  int get hashCode => id.hashCode ^ name.hashCode ^ code.hashCode ^ dialCode.hashCode;
 
   @override
   String toString() {
     return 'Country{ id: $id, name: $name, code: $code, dialCode: $dialCode,}';
   }
 
-  Country copyWith({
-    int? id,
-    String? name,
-    String? code,
-    String? dialCode,
-  }) {
+  Country copyWith({int? id, String? name, String? code, String? dialCode}) {
     return Country(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -47,12 +36,7 @@ class Country {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': this.id,
-      'name': this.name,
-      'code': this.code,
-      'dialCode': this.dialCode,
-    };
+    return {'id': this.id, 'name': this.name, 'code': this.code, 'dialCode': this.dialCode};
   }
 
   factory Country.fromMap(Map<String, dynamic> map) {
@@ -64,5 +48,5 @@ class Country {
     );
   }
 
-//</editor-fold>
+  //</editor-fold>
 }

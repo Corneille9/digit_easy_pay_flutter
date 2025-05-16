@@ -1,124 +1,210 @@
-import 'package:digit_easy_pay_flutter/digit_easy_pay_flutter.dart';
-import 'package:digit_easy_pay_flutter/src/common/payment_validator.dart';
+import 'dart:async';
+
+import 'package:digit_easy_pay_flutter/src/lib/flutter_paypal_payment/flutter_paypal_payment.dart';
+import 'package:digit_easy_pay_flutter/src/models/payment_result.dart';
+import 'package:digit_easy_pay_flutter/src/providers/base_payment_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_paypal_native/models/custom/currency_code.dart';
-import 'package:flutter_paypal_native/models/custom/environment.dart';
-import 'package:flutter_paypal_native/models/custom/order_callback.dart';
-import 'package:flutter_paypal_native/models/custom/purchase_unit.dart';
-import 'package:flutter_paypal_native/models/custom/user_action.dart';
-import 'package:flutter_paypal_native/str_helper.dart';
-import 'package:flutter_paypal_native/flutter_paypal_native.dart';
 
-class PaypalPaymentProvider extends ChangeNotifier{
-  final FlutterPaypalNative _flutterPaypalPlugin = FlutterPaypalNative.instance;
-  final FPayPalCurrencyCode baseCurrency = FPayPalCurrencyCode.eur;
-  final Credentials converterCredentials;
+import '../../digit_easy_pay_flutter.dart';
+import '../common/payment_validator.dart';
+import '../common/payment_constants.dart';
 
-  final PayPalConfig config;
-  final num amount;
-  final DigitEasyPayCurrency currency;
-  final DigitEasyPayCallback? onSuccess;
-  final VoidCallback? onCancel;
-  final VoidCallback? onError;
+/// A payment provider that handles PayPal payments
+class PaypalPaymentProvider extends BasePaymentProvider {
+  /// Configuration for the payment
+  final PaymentConfig paymentConfig;
 
+  /// The payment request details
+  final PaymentRequest request;
+
+  /// The base currency for PayPal transactions
+  Currency baseCurrency = Currency.EUR;
+
+  /// The amount after currency conversion (if needed)
   num? convertedAmount;
 
-  PaypalPaymentProvider({
-    required this.config,
-    required this.amount,
-    required this.currency,
-    required this.converterCredentials,
-    this.onSuccess,
-    this.onCancel,
-    this.onError,
-  });
+  /// Creates a new PayPal payment provider
+  PaypalPaymentProvider({required this.paymentConfig, required this.request});
 
-  Future<void> _initPaypal({required String referenceId}) async {
-    //initiate payPal plugin
-    await _flutterPaypalPlugin.init(
-      //your app id !!! No Underscore!!! see readme.md for help
-      returnUrl: config.payPalReturnUrl,
-      //client id from developer dashboard
-      clientID: config.payPalClientID,
-      //sandbox, staging, live etc
-      payPalEnvironment: config.environment.isLive?FPayPalEnvironment.live:FPayPalEnvironment.sandbox,
-      //what currency do you plan to use? default is US dollars
-      currencyCode: baseCurrency,
-      //action paynow?
-      action: FPayPalUserAction.payNow,
-    );
+  /// Gets the currency converter credentials from payment config
+  Credentials get converterCredentials => paymentConfig.currencyConverterCredentials;
 
-    //call backs for payment
-    _flutterPaypalPlugin.setPayPalOrderCallback(
-      callback: FPayPalOrderCallback(
-        onCancel: () {
-          onCancel?.call();
-          debugPrint("Paypal payment cancel");
-        },
-        onSuccess: (data) {
-          _flutterPaypalPlugin.removeAllPurchaseItems();
-          onSuccess?.call(data.orderId ?? referenceId, DigitEasyPayPaymentSource.PAYPAL, "visa_card");
-          debugPrint("Paypal payment success");
-        },
-        onError: (data) {
-          debugPrint("Paypal payment fail :${data.reason}");
-          debugPrint(data.error);
-          onError?.call();
-        },
-      ),
+  /// Gets the amount from the payment request
+  num get amount => request.amount;
+
+  /// Gets the currency from the payment request
+  Currency get currency => request.currency;
+
+  /// Gets the PayPal configuration from payment config
+  PayPalConfig get config => paymentConfig.payPalConfig!;
+
+  /// Gets the payment theme from payment config
+  PaymentTheme get theme => paymentConfig.theme;
+
+  @override
+  Future<void> init() async {
+    // Only use USD, EUR as base currencies for PayPal
+    if ([Currency.USD, Currency.EUR].contains(currency)) {
+      baseCurrency = currency;
+    }
+    // Otherwise, default to EUR as set in the constructor
+  }
+
+  /// Creates a failed payment result and updates status
+  PaymentResult _createErrorResult() {
+    setStatus(RequestStatus.error);
+    return PaymentResult(gateway: PaymentGateway.PAYPAL, success: false);
+  }
+
+  /// Creates a successful payment result and updates status
+  PaymentResult _createSuccessResult(String reference) {
+    setStatus(RequestStatus.success);
+    return PaymentResult(
+      gateway: PaymentGateway.PAYPAL,
+      reference: reference,
+      gatewayMethod: 'visa_card',
+      success: true,
     );
   }
 
-  Future<void> makePayment({VoidCallback? onInitialized}) async {
-    try{
-      debugPrint("PaypalInternational - Convert amount...");
-
-      if(currency.name.toLowerCase() != baseCurrency.name.toLowerCase()){
-        convertedAmount = await PaymentUtils.convertAmount(amount, converterCredentials,
-          from: currency.name.toUpperCase(),
-          to: baseCurrency.name.toUpperCase(),
-        );
-      }else{
-        convertedAmount = amount;
-      }
-      
-      if(convertedAmount == null){
-        onError?.call();
-        return;
+  @override
+  Future<PaymentResult> pay({required BuildContext context}) async {
+    try {
+      if (isLoading || isProcessing) {
+        debugPrint("Payment already in progress");
+        return _createErrorResult();
       }
 
-      String referenceId = FPayPalStrHelper.getRandomString(16);
+      debugPrint("PayPal payment initializing...");
+      setStatus(RequestStatus.loading);
 
-      await _initPaypal(referenceId: referenceId);
+      // Convert currency if needed
+      await _convertCurrencyIfNeeded();
 
-      _flutterPaypalPlugin.removeAllPurchaseItems();
+      if (convertedAmount == null) {
+        debugPrint("Currency conversion failed");
+        return _createErrorResult();
+      }
 
-      _flutterPaypalPlugin.addPurchaseUnit(
-        FPayPalPurchaseUnit(
-          amount: convertedAmount!.toDouble(),
-          ///please use your own algorithm for referenceId. Maybe ProductID?
-          referenceId: referenceId,
-          currencyCode: baseCurrency,
+      // Wait for the payment to complete
+      return await _launchPayPalCheckout(context);
+    } catch (e, s) {
+      debugPrint("PayPal payment error: $e");
+      debugPrintStack(stackTrace: s);
+
+      return _createErrorResult();
+    }
+  }
+
+  /// Converts the amount to the base currency if needed
+  Future<void> _convertCurrencyIfNeeded() async {
+    if (currency.name.toLowerCase() != baseCurrency.name.toLowerCase()) {
+      convertedAmount = await PaymentUtils.convertAmount(
+        amount,
+        converterCredentials,
+        from: currency.name.toUpperCase(),
+        to: baseCurrency.name.toUpperCase(),
+      );
+    } else {
+      convertedAmount = amount;
+    }
+  }
+
+  /// Launches the PayPal checkout view
+  Future<PaymentResult> _launchPayPalCheckout(BuildContext context) async {
+    try {
+      final formattedAmount = convertedAmount!.toStringAsFixed(2);
+
+      var result = await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder:
+              (BuildContext context) => PaypalCheckoutView(
+                paymentConfig: paymentConfig,
+                sandboxMode: config.sandbox,
+                clientId: config.clientId,
+                secretKey: config.clientSecret,
+                transactions: [
+                  {
+                    "amount": {
+                      "total": formattedAmount,
+                      "currency": baseCurrency.name,
+                      "details": {
+                        "subtotal": formattedAmount,
+                        "shipping": '0',
+                        "shipping_discount": 0,
+                      },
+                    },
+                    "description": "Payment transaction",
+                    "item_list": {
+                      "items": [
+                        {
+                          "name": "Digit Pay",
+                          "quantity": 1,
+                          "price": formattedAmount,
+                          "currency": baseCurrency.name,
+                        },
+                      ],
+                    },
+                  },
+                ],
+                note: "Contact us for any questions on your order.",
+                onSuccess: (Map params) async {
+                  debugPrint("PayPal payment successful: $params");
+                  // Pop the PayPal view
+                  Navigator.pop(context, params);
+                },
+                onError: (error) {
+                  debugPrint("PayPal payment error: $error");
+                  Navigator.pop(context);
+                },
+                onCancel: () {
+                  debugPrint('PayPal payment cancelled');
+                  Navigator.pop(context);
+                },
+              ),
         ),
       );
 
-      Future.delayed(const Duration(seconds: 5), () => onInitialized?.call());
+      if (result is! Map) {
+        return _createErrorResult();
+      }
 
-      _flutterPaypalPlugin.makeOrder(
-        action: FPayPalUserAction.payNow,
-      ).onError((error, stackTrace) {
-        debugPrint('PaypalInternational - makeOrder - error: $error');
-        debugPrint(error.toString());
-        debugPrintStack(stackTrace: stackTrace);
-        onError?.call();
-      },);
+      var id = _extractTransactionId(result);
 
-    }catch(error, stackTrace) {
-      onInitialized?.call();
-      debugPrint('PaypalInternational - makePayment - error: $error');
-      debugPrint(error.toString());
-      debugPrintStack(stackTrace: stackTrace);
-      onError?.call();
+      if (id == null) {
+        debugPrint("Error extracting transaction ID");
+        return _createErrorResult();
+      }
+
+      return _createSuccessResult(id);
+    } catch (e, s) {
+      debugPrint("PayPal payment error: $e");
+      debugPrintStack(stackTrace: s);
+      return _createErrorResult();
+    }
+  }
+
+  /// Extracts the transaction ID from the PayPal response
+  String? _extractTransactionId(Map params) {
+    try {
+      // Try to extract transaction ID from different possible locations in the response
+      if (params.containsKey('paymentId')) {
+        return params['paymentId'];
+      } else if (params.containsKey('data') &&
+          params['data'] is Map &&
+          params['data'].containsKey('id')) {
+        return params['data']['id'];
+      } else if (params.containsKey('response') &&
+          params['response'] is Map &&
+          params['response'].containsKey('id')) {
+        return params['response']['id'];
+      }
+
+      // If we can't find a specific ID, convert the whole response to a string
+      return params.toString();
+    } catch (e) {
+      debugPrint("Error extracting transaction ID: $e");
+      return null;
     }
   }
 }

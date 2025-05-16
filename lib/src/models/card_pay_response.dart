@@ -1,10 +1,10 @@
-class CardPayResponse{
+class CardPayResponse {
   final String responseCode;
   final String token;
   final String url;
   final String reference;
 
-//<editor-fold desc="Data Methods">
+  //<editor-fold desc="Data Methods">
 
   const CardPayResponse({
     required this.responseCode,
@@ -30,12 +30,7 @@ class CardPayResponse{
     return 'CardPayResponse{ responseCode: $responseCode, token: $token, url: $url, reference: $reference,}';
   }
 
-  CardPayResponse copyWith({
-    String? responseCode,
-    String? token,
-    String? url,
-    String? reference,
-  }) {
+  CardPayResponse copyWith({String? responseCode, String? token, String? url, String? reference}) {
     return CardPayResponse(
       responseCode: responseCode ?? this.responseCode,
       token: token ?? this.token,
@@ -55,12 +50,12 @@ class CardPayResponse{
 
   factory CardPayResponse.fromMap(Map<String, dynamic> map) {
     return CardPayResponse(
-      responseCode: map['responseCode']??'',
-      token: map['token']??'',
-      url: map['url']??'',
+      responseCode: map['responseCode'] ?? '',
+      token: map['token'] ?? '',
+      url: map['url'] ?? '',
       reference: map['reference'] as String,
     );
   }
 
-//</editor-fold>
+  //</editor-fold>
 }

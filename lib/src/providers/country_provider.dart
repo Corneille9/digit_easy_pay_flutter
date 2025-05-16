@@ -1,48 +1,41 @@
 /// CountryProvider Class
 ///
 /// This class provides a list of countries and handles the retrieval of country data for a payment checkout. It also manages loading and error states and can be used in combination with a Flutter provider for state management.
-import 'package:digit_easy_pay_flutter/digit_easy_pay_flutter.dart';
+import 'package:digit_easy_pay_flutter/src/common/base_state_provider.dart';
 import 'package:digit_easy_pay_flutter/src/models/country.dart';
-import 'package:digit_easy_pay_flutter/ui/views/digit_easy_pay_checkout.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
-class CountryProvider extends ChangeNotifier {
+import '../common/payment_constants.dart';
+import '../http/payment_service.dart';
+
+class CountryProvider extends BaseStateProvider {
   List<Country> countries = [];
-  bool _isLoading = false;
-  bool _hasError = false;
 
   /// Get whether the provider has data (countries).
   bool get hasData => countries.isNotEmpty;
 
-  /// Get whether the provider has encountered an error.
-  bool get hasError => _hasError;
+  final PaymentService service;
+
+  CountryProvider({required this.service});
 
   /// Retrieve a list of countries for a payment checkout.
   ///
   /// @param checkout The DigitEasyPayCheckout instance used to access the payment provider.
-  Future<void> getCountries(DigitEasyPayCheckout checkout) async {
-    if (_isLoading) return;
-    if (countries.isNotEmpty) return;
+  Future<void> init() async {
+    try {
+      if (isLoading) return;
 
-    _hasError = false;
-    _isLoading = true;
+      if (countries.isNotEmpty) return;
 
-    notifyListeners();
+      setStatus(RequestStatus.loading);
 
-    countries = await checkout.provider.getAllCountries().whenComplete(() => _isLoading = false).onError((error, stackTrace) {
-      _hasError = true;
-      notifyListeners();
+      countries = await service.getAllCountries();
 
-      if (error is DioException) {
-        debugPrint(error.response?.data.toString());
-        debugPrintStack(stackTrace: stackTrace);
-        DigitEasyPayException.interpretError(error);
-      }
-
-      throw DigitEasyPayException(error.toString());
-    });
-
-    notifyListeners();
+      setStatus(RequestStatus.success);
+    } catch (e, s) {
+      debugPrint("Error retrieving countries: $e");
+      debugPrint("Stack trace: $s");
+      setStatus(RequestStatus.error);
+    }
   }
 }

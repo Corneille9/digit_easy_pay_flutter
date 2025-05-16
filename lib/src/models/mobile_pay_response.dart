@@ -1,4 +1,4 @@
-class MobilePayResponse{
+class MobilePayResponse {
   final String comment;
   final String responseCode;
   final String responseMessage;
@@ -22,9 +22,9 @@ class MobilePayResponse{
 
   factory MobilePayResponse.fromMap(Map<String, dynamic> map) {
     return MobilePayResponse(
-      comment: map['comment']??'',
-      responseCode: map['responseCode']??'',
-      responseMessage: map['responseMessage']??'',
+      comment: map['comment'] ?? '',
+      responseCode: map['responseCode'] ?? '',
+      responseMessage: map['responseMessage'] ?? '',
       transferRef: map['transferRef'] as String,
     );
   }

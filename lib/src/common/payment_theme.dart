@@ -58,6 +58,7 @@ abstract class PaymentTheme {
   });
 
   final bool isLight;
+
   /// Used as a background color of a chat widget
   final Color backgroundColor;
 
@@ -111,58 +112,38 @@ class DefaultPaymentTheme extends PaymentTheme {
   /// override only a couple of properties, otherwise create a new class
   /// which extends [PaymentTheme]
   DefaultPaymentTheme({
-    bool isLight = true,
-    Color backgroundColor = neutral7,
-    Color backgroundSubtleColor = neutral0Subtle,
-    Color errorColor = error,
-    Color inputBackgroundColor = neutral7,
-    BorderRadius inputBorderRadius = const BorderRadius.vertical(
-      top: Radius.circular(20),
-    ),
+    super.isLight,
+    super.backgroundColor = neutral7,
+    super.backgroundSubtleColor = neutral0Subtle,
+    super.errorColor = error,
+    super.inputBackgroundColor = neutral7,
+    super.inputBorderRadius = const BorderRadius.vertical(top: Radius.circular(20)),
     Decoration? inputContainerDecoration,
     EdgeInsets inputMargin = EdgeInsets.zero,
-    EdgeInsets inputPadding = const EdgeInsets.fromLTRB(24, 20, 24, 20),
-    Color inputTextColor = neutral0,
-    Color? inputTextCursorColor = primary,
-    InputDecoration inputTextDecoration = const InputDecoration(
+    super.inputPadding = const EdgeInsets.fromLTRB(24, 20, 24, 20),
+    super.inputTextColor = neutral0,
+    super.inputTextCursorColor = primary,
+    super.inputTextDecoration = const InputDecoration(
       border: InputBorder.none,
       contentPadding: EdgeInsets.zero,
       isCollapsed: true,
     ),
-    TextStyle inputTextStyle = const TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.w500,
-      height: 1.5,
-    ),
-    Color unSelectedMethodColor = neutral1,
-    Color unSelectedMethodTextColor = neutral0,
+    super.inputTextStyle = const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, height: 1.5),
+    super.unSelectedMethodColor = neutral1,
+    super.unSelectedMethodTextColor = neutral0,
     InputBorder? inputBorder,
-    Color textColor = neutral0,
-    Color primaryColor = primary,
-    Color dialogBackgroundColor = neutral7,
-  }) :super(
-    isLight: isLight,
-    backgroundColor: backgroundColor,
-    backgroundSubtleColor: backgroundSubtleColor,
-    errorColor: errorColor,
-    inputBackgroundColor: inputBackgroundColor,
-    inputBorderRadius: inputBorderRadius,
-    inputPadding: inputPadding,
-    inputTextColor: inputTextColor,
-    inputTextCursorColor: inputTextCursorColor,
-    inputTextDecoration: inputTextDecoration,
-    inputTextStyle: inputTextStyle,
-    unSelectedMethodColor: unSelectedMethodColor ,
-    unSelectedMethodTextColor: unSelectedMethodTextColor,
-    textColor: textColor,
-    inputBorder: inputBorder??OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: neutral0.withOpacity(0.1), width: 1)
-    ),
-    primaryColor: primaryColor,
-    dialogBackgroundColor: dialogBackgroundColor,
-    paymentSourceShadowColor: const Color(0xFFECECEC),
-  );
+    super.textColor = neutral0,
+    super.primaryColor = primary,
+    super.dialogBackgroundColor = neutral7,
+  }) : super(
+         inputBorder:
+             inputBorder ??
+             OutlineInputBorder(
+               borderRadius: BorderRadius.circular(12),
+               borderSide: BorderSide(color: neutral0.withOpacity(0.1), width: 1),
+             ),
+         paymentSourceShadowColor: const Color(0xFFECECEC),
+       );
 }
 
 /// Dark chat theme which extends [PaymentTheme]
@@ -173,57 +154,36 @@ class DarkPaymentTheme extends PaymentTheme {
   /// which extends [PaymentTheme]
 
   DarkPaymentTheme({
-    bool isLight = false,
-    Color backgroundColor = Colors.black,
-    Color backgroundSubtleColor = neutral0Subtle,
-    Color errorColor = error,
-    Color inputBackgroundColor = dark,
-    BorderRadius inputBorderRadius = const BorderRadius.vertical(
-      top: Radius.circular(20),
-    ),
+    super.isLight = false,
+    super.backgroundColor = Colors.black,
+    super.backgroundSubtleColor = neutral0Subtle,
+    super.errorColor = error,
+    super.inputBackgroundColor = dark,
+    super.inputBorderRadius = const BorderRadius.vertical(top: Radius.circular(20)),
     Decoration? inputContainerDecoration,
     EdgeInsets inputMargin = EdgeInsets.zero,
-    EdgeInsets inputPadding = const EdgeInsets.fromLTRB(24, 20, 24, 20),
-    Color inputTextColor = neutral7,
-    Color? inputTextCursorColor = primary,
-    InputDecoration inputTextDecoration = const InputDecoration(
+    super.inputPadding = const EdgeInsets.fromLTRB(24, 20, 24, 20),
+    super.inputTextColor = neutral7,
+    super.inputTextCursorColor = primary,
+    super.inputTextDecoration = const InputDecoration(
       border: InputBorder.none,
       contentPadding: EdgeInsets.zero,
       isCollapsed: true,
     ),
-    TextStyle inputTextStyle = const TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.w500,
-      height: 1.5,
-    ),
-    Color unSelectedMethodColor = neutral7,
-    Color unSelectedMethodTextColor = neutral7,
-    Color textColor = neutral7,
+    super.inputTextStyle = const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, height: 1.5),
+    super.unSelectedMethodColor = neutral7,
+    super.unSelectedMethodTextColor = neutral7,
+    super.textColor = neutral7,
     InputBorder? inputBorder,
-    Color primaryColor = primary,
-    Color dialogBackgroundColor = dark,
-    Color paymentSourceShadowColor = const Color(0xff1d1c21),
-  }) :super(
-          isLight: isLight,
-          backgroundColor: backgroundColor,
-          backgroundSubtleColor: backgroundSubtleColor,
-          errorColor: errorColor,
-          inputBackgroundColor: inputBackgroundColor,
-          inputBorderRadius: inputBorderRadius,
-          inputPadding: inputPadding,
-          inputTextColor: inputTextColor,
-          inputTextCursorColor: inputTextCursorColor,
-          inputTextDecoration: inputTextDecoration,
-          inputTextStyle: inputTextStyle,
-          unSelectedMethodColor: unSelectedMethodColor ,
-          unSelectedMethodTextColor: unSelectedMethodTextColor,
-          textColor: textColor,
-          inputBorder: inputBorder??OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: neutral7.withOpacity(0.1), width: 1)
-          ),
-          primaryColor: primaryColor,
-          dialogBackgroundColor: dialogBackgroundColor,
-          paymentSourceShadowColor: paymentSourceShadowColor,
-        );
+    super.primaryColor = primary,
+    super.dialogBackgroundColor = dark,
+    super.paymentSourceShadowColor = const Color(0xff1d1c21),
+  }) : super(
+         inputBorder:
+             inputBorder ??
+             OutlineInputBorder(
+               borderRadius: BorderRadius.circular(12),
+               borderSide: BorderSide(color: neutral7.withOpacity(0.1), width: 1),
+             ),
+       );
 }

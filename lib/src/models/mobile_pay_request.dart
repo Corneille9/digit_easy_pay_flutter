@@ -1,4 +1,6 @@
-class MobilePayRequest{
+import '../common/form_request.dart';
+
+class MobilePayRequest extends FormRequest{
   final String phoneNumber;
   final num amount;
   final String firstName;
@@ -29,12 +31,12 @@ class MobilePayRequest{
     );
   }
 
-
   @override
   String toString() {
     return 'MobilePayRequest{phoneNumber: $phoneNumber, amount: $amount, firstName: $firstName, lastName: $lastName, email: $email}';
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return {
       'phoneNumber': this.phoneNumber,

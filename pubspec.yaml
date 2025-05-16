@@ -1,31 +1,31 @@
 name: digit_easy_pay_flutter
-description: A new Flutter package project.
-version: 0.1.2
+description: "A new Flutter package project."
+version: 1.0.0+3
 homepage: https://github.com/Corneille9/digit_easy_pay_flutter.git
 
 environment:
-  sdk: '>=3.1.0 <4.0.0'
+  sdk: ^3.7.2
   flutter: ">=1.17.0"
 
 dependencies:
-  dio: ^5.4.0
   flutter:
     sdk: flutter
-  flutter_paypal_native: ^2.1.0
-  flutter_stripe: ^9.5.0+1
-  fluttertoast: ^8.2.4
-  provider: ^6.0.5
-  url_launcher: ^6.2.4
-  webview_flutter: ^4.5.0
+  flutter_stripe: ^11.5.0
+  fluttertoast: ^8.2.12
+  provider: ^6.1.5
+  url_launcher: ^6.3.1
+  webview_flutter: ^4.11.0
   digit_currency_converter:
     git:
       url: https://github.com/Corneille9/digit_currency_converter.git
       ref: main
+  dio: ^5.8.0+1
+  flutter_inappwebview: ^6.1.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^5.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -38,10 +38,10 @@ flutter:
     - assets/
   #
   # For details regarding assets in packages, see
-  # https://flutter.dev/assets-and-images/#from-packages
+  # https://flutter.dev/to/asset-from-package
   #
   # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/assets-and-images/#resolution-aware
+  # https://flutter.dev/to/resolution-aware-images
 
   # To add custom fonts to your package, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
@@ -61,4 +61,4 @@ flutter:
   #         weight: 700
   #
   # For details regarding fonts in packages, see
-  # https://flutter.dev/custom-fonts/#from-packages
+  # https://flutter.dev/to/font-from-package
