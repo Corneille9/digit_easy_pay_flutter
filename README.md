@@ -28,12 +28,12 @@ dependencies:
   digit_easy_pay_flutter:
     git:
       url: https://github.com/Corneille9/digit_easy_pay_flutter.git
-      ref: dev
+      ref: main
 ```
 
 Then run:
 
-```shellscript
+```shell
 flutter pub get
 ```
 
@@ -44,7 +44,7 @@ flutter pub get
 Initialize the library with your payment gateway configurations. **Important**: You must call
 `setConfig()` before using any other functionality in the library.
 
-```plaintext
+```dart
 import 'package:digit_easy_pay_flutter/digit_easy_pay_flutter.dart';
 import 'package:flutter/material.dart';
 
@@ -103,7 +103,7 @@ void main() {
 
 To process a payment, simply call the `checkout` method:
 
-```plaintext
+```dart
 Future<void> processPayment() async {
   final paymentResponse = await DigitEasyPayFlutter.checkout(
     context: context,
@@ -132,7 +132,7 @@ Future<void> processPayment() async {
 
 Stripe is a global payment processor that supports credit cards and other payment methods.
 
-```plaintext
+```dart
 StripeConfig(
   stripePrivateKey: 'your_stripe_private_key',
   stripePublishableKey: 'your_stripe_publishable_key',
@@ -142,11 +142,11 @@ StripeConfig(
 )
 ```
 
-### PayPal
+### dart
 
 PayPal is a widely used online payment system that supports credit cards and PayPal accounts.
 
-```plaintext
+```dart
 PayPalConfig(
   clientId: 'your_paypal_client_id',
   clientSecret: 'your_paypal_client_secret',
@@ -158,7 +158,7 @@ PayPalConfig(
 
 FedaPay is a payment gateway focused on African markets.
 
-```plaintext
+```dart
 FedapayConfig(
   apiKey: 'your_fedapay_api_key',
   callbackUrl: 'your_callback_url', // Optional
@@ -171,7 +171,7 @@ FedapayConfig(
 
 Qosic supports mobile money payments in various African countries.
 
-```plaintext
+```dart
 QosicConfig(
   userKey: 'your_qosic_user_key',
   username: 'your_qosic_username',
@@ -192,7 +192,7 @@ QosicConfig(
 
 You can customize the appearance of the payment UI by providing a custom theme:
 
-```plaintext
+```dart
 // Use the default light theme
 theme: DefaultPaymentTheme(),
 
@@ -213,7 +213,7 @@ theme: DefaultPaymentTheme(
 
 The library supports multiple languages out of the box:
 
-```plaintext
+```dart
 // English
 lang: L10nEn(),
 
@@ -239,7 +239,7 @@ The library automatically converts currencies when a payment method doesn't supp
 specified in your payment request. This requires setting up the `currencyConverterCredentials` in
 your `PaymentConfig`:
 
-```plaintext
+```dart
 PaymentConfig(
   currencyConverterCredentials: Credentials(
     username: 'your_converter_username',
@@ -256,7 +256,7 @@ library will automatically convert the amount before processing the payment.
 
 If you need to save external transactions to backend:
 
-```plaintext
+```dart
 // Important: Make sure DigitEasyPayFlutter.setConfig() has been called first
 Future<void> saveExternalTransaction() async {
   await DigitEasyPayFlutter().notifyExternalTransaction({
@@ -282,7 +282,7 @@ Future<void> saveExternalTransaction() async {
 
 The library provides comprehensive error handling:
 
-```plaintext
+```dart
 try {
   final response = await DigitEasyPayFlutter.checkout(
     context: context,
@@ -306,7 +306,7 @@ try {
 
 Here's a complete example of a payment screen:
 
-```plaintext
+```dart
 import 'package:digit_easy_pay_flutter/digit_easy_pay_flutter.dart';
 import 'package:flutter/material.dart';
 
@@ -379,7 +379,7 @@ The library supports a wide range of currencies, including:
 
 Use the `Currency` enum to specify the currency for your payment:
 
-```plaintext
+```dart
 PaymentRequest(
   amount: 100.0,
   currency: Currency.USD,
