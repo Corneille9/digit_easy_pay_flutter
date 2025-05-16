@@ -38,7 +38,7 @@ export 'package:digit_easy_pay_flutter/src/common/digit_easy_pay_config.dart';
 /// Exception classes for error handling
 export 'package:digit_easy_pay_flutter/src/common/exceptions.dart';
 /// Payment constants including enums for currencies and payment gateways
-export 'package:digit_easy_pay_flutter/src/common/payment_constants.dart' show QosicPaymentGateway, Currency;
+export 'package:digit_easy_pay_flutter/src/common/payment_constants.dart' show QosicPaymentGateway, Currency, PaymentGateway;
 /// Localization support for payment UI
 export 'package:digit_easy_pay_flutter/src/common/payment_l10n.dart';
 /// Theming support for payment UI
